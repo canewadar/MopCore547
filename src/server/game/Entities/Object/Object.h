@@ -256,7 +256,11 @@ class Object
             ASSERT(offset < 2);
             return *(((uint16*)&m_uint32Values[index])+offset);
         }
-
+		//npcbot
+		void Object::SetGuidValue(uint16 index, ObjectGuid const &value) {
+			SetUInt64Value(index, uint64(value));
+		}
+		//end npcbot
         void SetInt32Value(uint16 index, int32 value);
         void SetUInt32Value(uint16 index, uint32 value);
         void UpdateInt32Value(uint16 index, int32 value);
@@ -647,6 +651,10 @@ class WorldObject : public Object, public WorldLocation
         float GetVisibilityRange() const;
         float GetSightRange(const WorldObject* target = NULL) const;
         bool canSeeOrDetect(WorldObject const* obj, bool ignoreStealth = false, bool distanceCheck = false) const;
+		//npcbot
+		bool CanSeeOrDetect(WorldObject const* obj, bool ignoreStealth = false, bool distanceCheck = false) const
+		{ return canSeeOrDetect(obj, ignoreStealth, distanceCheck); }
+		//end npcbot
 
         void setExplicitSeerGuid(uint64 guid)
         {

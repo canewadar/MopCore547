@@ -96,4 +96,17 @@ void WorldDatabaseConnection::DoPrepareStatements()
     PREPARE_STATEMENT(WORLD_DEL_DISABLES, "DELETE FROM disables WHERE entry = ? AND sourceType = ?", CONNECTION_ASYNC);
     PREPARE_STATEMENT(WORLD_SEL_BLACKMARKET_TEMPLATE, "SELECT id, itemEntry, itemCount, seller, startBid, duration, chance FROM blackmarket_template;", CONNECTION_SYNCH);
     PREPARE_STATEMENT(WORLD_SEL_BOSS_LOOT_QUEST_ID, "SELECT questId FROM boss_loot_weekly_quest WHERE entry = ? and difficulty = ?", CONNECTION_SYNCH);
+
+    /*// Persoan Rates System.
+    PREPARE_STATEMENT(WORLD_UPD_XP_RATE_TEMPLATE, "UPDATE personal_rates_table SET rate_xp = ? WHERE guid = ?", CONNECTION_ASYNC);
+    PREPARE_STATEMENT(WORLD_UPD_HONOR_RATE_TEMPLATE, "UPDATE personal_rates_table SET rate_honor = ? WHERE guid = ?", CONNECTION_ASYNC);
+    PREPARE_STATEMENT(WORLD_UPD_GOLD_RATE_TEMPLATE, "UPDATE personal_rates_table SET rate_gold = ? WHERE guid = ?", CONNECTION_ASYNC);
+    PREPARE_STATEMENT(WORLD_INS_RATE_TEMPLATE, "INSERT INTO personal_rates_table (guid, rate_xp, rate_honor, rate_gold) VALUES (?, ?, ?, ?)", CONNECTION_ASYNC);
+    PREPARE_STATEMENT(WORLD_SEL_RATE_TEMPLATE, "SELECT guid, rate_xp, rate_honor, rate_gold FROM personal_rates_table WHERE guid = ?", CONNECTION_SYNCH);
+    PREPARE_STATEMENT(WORLD_DEL_RATE_TEMPLATE, "DELETE FROM personal_rates_table WHERE guid = ?", CONNECTION_ASYNC)*/
+
+    // New NPCBots
+	PREPARE_STATEMENT(WORLD_SEL_NPCBOT_INFO,           "SELECT guid, map, position_x, position_y, position_z, orientation FROM creature WHERE id = ?", CONNECTION_SYNCH);
+	PREPARE_STATEMENT(WORLD_SEL_NPCBOT_PET_LEVELSTATS, "SELECT hp, mana, armor, str, agi, sta, inte, spi FROM pet_levelstats WHERE creature_entry = ? AND level = ?", CONNECTION_SYNCH);
+	PREPARE_STATEMENT(WORLD_UPD_NPCBOT_POSITION,       "UPDATE creature SET map = ?, position_x = ?, position_y = ?, position_z = ?, orientation = ? WHERE guid = ?", CONNECTION_ASYNC);
 }

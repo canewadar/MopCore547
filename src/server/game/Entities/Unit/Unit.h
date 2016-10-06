@@ -1291,7 +1291,9 @@ class Unit : public WorldObject
         AttackerSet const& getAttackers() const { return m_attackers; }
         bool isAttackingPlayer() const;
         Unit* getVictim() const { return m_attacking; }
-
+		//npcbot
+		Unit* GetVictim() const { return getVictim(); }
+		//end npcbot
         void CombatStop(bool includingCast = false);
         void CombatStopWithPets(bool includingCast = false);
         void StopAttackFaction(uint32 faction_id);
@@ -1329,8 +1331,14 @@ class Unit : public WorldObject
         bool isSummon() const   { return m_unitTypeMask & UNIT_MASK_SUMMON; }
         bool isGuardian() const { return m_unitTypeMask & UNIT_MASK_GUARDIAN; }
         bool isPet() const      { return m_unitTypeMask & UNIT_MASK_PET; }
+		//npcbot
+		bool IsPet() const { return isPet(); }
+		//end npcbot
         bool isHunterPet() const{ return m_unitTypeMask & UNIT_MASK_HUNTER_PET; }
         bool isTotem() const    { return m_unitTypeMask & UNIT_MASK_TOTEM; }
+		//npcbot
+		bool IsTotem() const    { return isTotem(); }
+		//end npcbot
         bool IsVehicle() const  { return m_unitTypeMask & UNIT_MASK_VEHICLE; }
 
         bool IsPetGuardianStuff() const { return m_unitTypeMask & ( UNIT_MASK_SUMMON | UNIT_MASK_GUARDIAN | UNIT_MASK_PET | UNIT_MASK_HUNTER_PET | UNIT_MASK_TOTEM ); }
@@ -1445,6 +1453,9 @@ class Unit : public WorldObject
         }
 
         uint8 getStandState() const { return GetByteValue(UNIT_FIELD_BYTES_1, 0); }
+		//npcbot
+		uint8 GetStandState() const { return getStandState(); }
+		//end npcbot
         bool IsSitState() const;
         bool IsStandState() const;
         void SetStandState(uint8 state);
@@ -1558,8 +1569,13 @@ class Unit : public WorldObject
         bool isSpiritService() const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER | UNIT_NPC_FLAG_SPIRITGUIDE); }
 
         bool isInFlight()  const { return HasUnitState(UNIT_STATE_IN_FLIGHT); }
-
+		//npcbot
+		bool IsInFlight()  const { return isInFlight(); }
+		//end npcbot
         bool isInCombat()  const { return HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT); }
+		//npcbot
+		bool IsInCombat()  const { return isInCombat(); }
+		//end npcbot
         void CombatStart(Unit* target, bool initialAggro = true);
         void SetInCombatState(bool PvP, Unit* enemy = NULL, bool isControlled = false);
         void SetInCombatWith(Unit* enemy);
@@ -1695,6 +1711,9 @@ class Unit : public WorldObject
         void BuildHeartBeatMsg(WorldPacket* data) const;
 
         bool IsAlive() const { return (m_deathState == ALIVE); };
+        //npcbot
+        bool IsAlive() const { return isAlive(); }
+        //end npcbot
         bool IsDying() const { return (m_deathState == JUST_DIED); };
         bool IsDead() const { return (m_deathState == DEAD || m_deathState == CORPSE); };
         DeathState getDeathState() { return m_deathState; };
@@ -1756,6 +1775,9 @@ class Unit : public WorldObject
         void RemoveAllControlled();
 
         bool isCharmed() const { return GetCharmerGUID() != 0; }
+		//npcbot
+		bool IsCharmed() const { return isCharmed(); }
+		//end npcbot
         bool isPossessed() const { return HasUnitState(UNIT_STATE_POSSESSED); }
         bool isPossessedByPlayer() const { return HasUnitState(UNIT_STATE_POSSESSED) && IS_PLAYER_GUID(GetCharmerGUID()); }
         bool isPossessing() const
@@ -1877,7 +1899,11 @@ class Unit : public WorldObject
         bool HasAuraTypeWithValue(AuraType auratype, int32 value) const;
         bool HasNegativeAuraWithInterruptFlag(uint32 flag, uint64 guid = 0);
         bool HasNegativeAuraWithAttribute(uint32 flag, uint64 guid = 0);
-        bool HasAuraWithMechanic(uint32 mechanicMask);
+        bool HasAuraWithMechanic(uint32 mechanicMask)
+			//npcbot
+			const
+			//end npcbot
+			;
         bool HasAuraWithNegativeCaster(uint32 spellid);
 
         void RemoveSoulSwapDOT(Unit* target);
@@ -1941,6 +1967,10 @@ class Unit : public WorldObject
         // delayed+channeled spells are always accounted as casted
         // we can skip channeled or delayed checks using flags
         bool IsNonMeleeSpellCasted(bool withDelayed, bool skipChanneled = false, bool skipAutorepeat = false, bool isAutoshoot = false, bool skipInstant = true) const;
+		//npcbot
+		bool IsNonMeleeSpellCast(bool withDelayed, bool skipChanneled = false, bool skipAutorepeat = false, bool isAutoshoot = false, bool skipInstant = true) const
+		{ return IsNonMeleeSpellCasted(withDelayed, skipChanneled, skipAutorepeat, isAutoshoot, skipInstant); }
+		//end npcbot
 
         // set withDelayed to true to interrupt delayed spells too
         // delayed+channeled spells are always interrupted
@@ -2122,9 +2152,17 @@ class Unit : public WorldObject
         void ApplyUberImmune(uint32 spellid, bool apply);
         void ApplySpellImmune(uint32 spellId, uint32 op, uint32 type, bool apply);
         void ApplySpellDispelImmunity(const SpellInfo* spellProto, DispelType type, bool apply);
-        virtual bool IsImmunedToSpell(SpellInfo const* spellInfo);
+        virtual bool IsImmunedToSpell(SpellInfo const* spellInfo)
+			//npcbot
+			const
+			//end npcbot
+			;
                                                             // redefined in Creature
-        bool IsImmunedToDamage(SpellSchoolMask meleeSchoolMask);
+        bool IsImmunedToDamage(SpellSchoolMask meleeSchoolMask)
+			//npcbot
+			const
+			//end npcbot
+			;
         bool IsImmunedToDamage(SpellInfo const* spellInfo);
         virtual bool IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) const;
                                                             // redefined in Creature
@@ -2295,6 +2333,12 @@ class Unit : public WorldObject
             if (!_focusSpell)
                 SetUInt64Value(UNIT_FIELD_TARGET, guid);
         }
+		//npcbot
+		uint64 GetTarget() const
+		{
+			return GetUInt64Value(UNIT_FIELD_TARGET);
+		}
+		//end npcbot
 
         // Handling caster facing during spell cast
         void FocusTarget(Spell const* focusSpell, uint64 target);
@@ -2336,6 +2380,17 @@ class Unit : public WorldObject
         void DisableEvadeMode() { m_disableEnterEvadeMode = true; }
         void ReenableEvadeMode() { m_disableEnterEvadeMode = false; }
         bool EvadeModeIsDisable() const { return m_disableEnterEvadeMode; }
+        //npcbot
+        bool HasReactive(ReactiveType reactive) const { return m_reactiveTimer[reactive] > 0; }
+        void ClearReactive(ReactiveType reactive);
+
+        void SuspendDelayedSwing();
+        void ExecuteDelayedSwingHit(bool extra = false);
+        CalcDamageInfo _damageInfo;
+        ObjectGuid _delayedTargetGuid;
+        uint32 _swingDelayTimer;
+        bool _swingLanded;
+        //end npcbot
 
     protected:
         explicit Unit (bool isWorldObject);
@@ -2436,6 +2491,10 @@ class Unit : public WorldObject
 
         uint32 m_oldEmoteState; // Used to store and restore old emote states for creatures.
 
+        // player or player's pet
+        float GetCombatRatingReduction(CombatRating cr) const;
+        uint32 GetCombatRatingDamageReduction(CombatRating cr, float cap, uint32 damage) const;
+
     private:
         bool IsTriggeredAtSpellProcEvent(Unit* victim, AuraPtr aura, SpellInfo const* procSpell, uint32 procFlag, uint32 procExtra, WeaponAttackType attType, bool isVictim, bool active, SpellProcEventEntry const* & spellProcEvent);
         bool HandleAuraProcOnPowerAmount(Unit* victim, uint32 damage, AuraEffectPtr triggeredByAura, SpellInfo const *procSpell, uint32 procFlag, uint32 procEx, uint32 cooldown);
@@ -2453,10 +2512,6 @@ class Unit : public WorldObject
 
         void UpdateSplineMovement(uint32 t_diff);
         void UpdateSplinePosition();
-
-        // player or player's pet
-        float GetCombatRatingReduction(CombatRating cr) const;
-        uint32 GetCombatRatingDamageReduction(CombatRating cr, float cap, uint32 damage) const;
 
     protected:
         void SendMoveRoot(uint32 value);

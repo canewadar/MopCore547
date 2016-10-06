@@ -17,6 +17,7 @@
  */
 
 #include "Common.h"
+#include "ByteBuffer.h"
 
 char const* localeNames[TOTAL_LOCALES] = {
   "enUS",
@@ -41,3 +42,4 @@ LocaleConstant GetLocaleByName(const std::string& name)
     return LOCALE_enUS;                                     // including enGB case
 }
 
+const ObjectGuid ObjectGuid::Empty = ObjectGuid();

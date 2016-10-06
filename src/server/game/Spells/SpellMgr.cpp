@@ -741,7 +741,7 @@ void SpellMgr::SetSpellDifficultyId(uint32 spellId, uint32 id)
 
 uint32 SpellMgr::GetSpellIdForDifficulty(uint32 spellId, Unit const* caster) const
 {
-    // Dbc supprim閑 au passage a MoP
+    // Dbc supprim? au passage a MoP
     return spellId;
     /*if (!GetSpellInfo(spellId))
     return spellId;

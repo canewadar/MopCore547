@@ -2203,6 +2203,9 @@ struct SpellRadiusEntry
     float     RadiusPerLevel;
     //float unkRadius;
     float     RadiusMax;
+	//npcbot
+	float RadiusMax() const { return std::max(radiusHostile, radiusFriend); }
+	//end npcbot
 };
 
 // @author Selenium: todo for 5.4 valid

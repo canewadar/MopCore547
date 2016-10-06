@@ -269,6 +269,10 @@ bool Player::UpdateAllStats()
     if (Pet* pet = GetPet())
         pet->UpdateAllStats();
 
+	//npcbot - Player::UpdateAllStats() is called on level change - update bots
+    SetBotsShouldUpdateStats();
+    //end npcbot
+
     return true;
 }
 
