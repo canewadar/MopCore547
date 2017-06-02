@@ -1297,7 +1297,7 @@ void bot_ai::_listAuras(Player* player, Unit* unit) const
 void bot_minion_ai::SetStats(bool force, bool shapeshift)
 {
     uint8 myclass = _botclass;
-    uint8 mylevel = std::min<uint8>(master->getLevel(), 80);
+    uint8 mylevel = std::min<uint8>(master->getLevel(), 90);
     if (myclass == BOT_CLASS_DRUID && GetBotStance() != BOT_STANCE_NONE)
         myclass = GetBotStance();
     if (myclass != DRUID_BEAR_FORM && myclass != DRUID_CAT_FORM && (master->IsDead() || (!shouldUpdateStats && !force)))
@@ -1312,7 +1312,7 @@ void bot_minion_ai::SetStats(bool force, bool shapeshift)
         case CREATURE_ELITE_RAREELITE:  mylevel += 3;   break;
         default:                                        break;
     }
-    mylevel = std::min<uint8>(mylevel, 83);
+    mylevel = std::min<uint8>(mylevel, 90);
 
     //Do not remove this code under any circumstances! You've been warned.
     if (myclass == BOT_CLASS_DEATH_KNIGHT)
@@ -5186,7 +5186,7 @@ void bot_minion_ai::SummonBotsPet(uint32 entry)
     if (m_botsPet)
         me->SetBotsPetDied();
 
-    uint8 mylevel = std::min<uint8>(master->getLevel(), 80);
+    uint8 mylevel = std::min<uint8>(master->getLevel(), 90);
     uint32 originalentry = bot_pet_ai::GetPetOriginalEntry(entry);
     if (!originalentry)
     {
