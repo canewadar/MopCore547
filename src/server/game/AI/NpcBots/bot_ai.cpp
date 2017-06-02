@@ -1341,15 +1341,15 @@ void bot_minion_ai::SetStats(bool force, bool shapeshift)
     uint8 tempclass = myclass == uint8(DRUID_BEAR_FORM) || myclass == uint8(DRUID_CAT_FORM) ? uint8(BOT_CLASS_DRUID) : myclass;
 	//sObjectMgr->GetPlayerClassLevelInfo(getClass(), level, basehp, basemana);
 	if (myclass >= BOT_CLASS_NORMAL_END)
-		sObjectMgr->GetPlayerClassLevelInfo(GetPlayerClass(), std::min<uint8>(mylevel, 80), _basehp, _basemana); //_classinfo);
+		sObjectMgr->GetPlayerClassLevelInfo(GetPlayerClass(), std::min<uint8>(mylevel, 90), _basehp, _basemana); //_classinfo);
     else
-        sObjectMgr->GetPlayerClassLevelInfo(tempclass, std::min<uint8>(mylevel, 80), _basehp, _basemana); //_classinfo);
+        sObjectMgr->GetPlayerClassLevelInfo(tempclass, std::min<uint8>(mylevel, 90), _basehp, _basemana); //_classinfo);
     const CreatureBaseStats* const classstats = sObjectMgr->GetCreatureBaseStats(mylevel, me->getClass()); //use creature class
 
     if (force)
     {
         PlayerLevelInfo info;
-        sObjectMgr->GetPlayerLevelInfo(me->getRace(), GetPlayerClass(), std::min<uint8>(mylevel, 80), &info);
+        sObjectMgr->GetPlayerLevelInfo(me->getRace(), GetPlayerClass(), std::min<uint8>(mylevel, 90), &info);
         for (uint8 i = STAT_STRENGTH; i != MAX_STATS; i++)
             me->SetCreateStat(Stats(i), info.stats[i]);
     }
