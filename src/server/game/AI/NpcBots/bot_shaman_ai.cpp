@@ -69,7 +69,7 @@ public:
             if (!triggered)
                 maelstrom = (MaelstromCount >= 5 &&
                 (spellId == GetSpell(LIGHTNING_BOLT_1) || spellId == GetSpell(CHAIN_LIGHTNING_1) ||
-                spellId == GetSpell(HEALING_WAVE_1) || spellId == GetSpell(LESSER_HEALING_WAVE_1) ||
+                spellId == GetSpell(HEALING_WAVE_1) || spellId == GetSpell(HEALING_SURGE_1) ||
                 spellId == GetSpell(CHAIN_HEAL_1) || spellId == GetSpell(HEX_1)));
 
             triggered |= maelstrom;
@@ -105,9 +105,9 @@ public:
         bool Shielded(Unit* target) const
         {
             return
-                (HasAuraName(target, WATER_SHIELD_1) ||
-                HasAuraName(target, EARTH_SHIELD_1) ||
-                HasAuraName(target, LIGHTNING_SHIELD_1));
+                (target->HasAura(WATER_SHIELD_1) ||
+			    target->HasAura(EARTH_SHIELD_1) ||
+				target->HasAura(LIGHTNING_SHIELD_1));
         }
 
         void CheckBloodlust(uint32 diff)
@@ -174,7 +174,7 @@ public:
             //TODO: role-based totems (attack/heal)
             if (me->IsInCombat())
             {
-                if (GetSpell(WINDFURY_TOTEM_1) && !_totems[T_AIR].first && !master->m_SummonSlot[T_AIR+1])
+            /*    if (GetSpell(WINDFURY_TOTEM_1) && !_totems[T_AIR].first && !master->m_SummonSlot[T_AIR+1])
                 {
                     temptimer = GC_Timer;
                     if (doCast(me, GetSpell(WINDFURY_TOTEM_1)))
@@ -183,24 +183,24 @@ public:
                             GC_Timer = temptimer;
                         return;
                     }
-                }
+                }*/
 
                 if (!_totems[T_EARTH].first && !master->m_SummonSlot[T_EARTH+1])
                 {
-                    if (GetSpell(STRENGTH_OF_EARTH_TOTEM_1))
+                    if (GetSpell(EARTH_ELEMENTAL_TOTEM_1))
                     {
                         temptimer = GC_Timer;
-                        if (doCast(me, GetSpell(STRENGTH_OF_EARTH_TOTEM_1)))
+                        if (doCast(me, GetSpell(EARTH_ELEMENTAL_TOTEM_1)))
                         {
-                            if (me->getLevel() >= 57)
+                            if (me->getLevel() >= 54)
                                 GC_Timer = temptimer;
                             return;
                         }
                     }
-                    else if (GetSpell(STONESKIN_TOTEM_1))
+                    else if (GetSpell(TREMOR_TOTEM_1))
                     {
                         temptimer = GC_Timer;
-                        if (doCast(me, GetSpell(STONESKIN_TOTEM_1)))
+                        if (doCast(me, GetSpell(TREMOR_TOTEM_1)))
                         {
                             if (me->getLevel() >= 57)
                                 GC_Timer = temptimer;
@@ -211,10 +211,10 @@ public:
 
                 if (!_totems[T_FIRE].first && !master->m_SummonSlot[T_FIRE+1])
                 {
-                    if (IsSpellReady(TOTEM_OF_WRATH_1, diff, false))
+                    if (IsSpellReady(MAGMA_TOTEM_1, diff, false))
                     {
                         temptimer = GC_Timer;
-                        if (doCast(me, GetSpell(TOTEM_OF_WRATH_1)))
+                        if (doCast(me, GetSpell(MAGMA_TOTEM_1)))
                         {
                             //bot's poor AI cannot use totems wisely so just reduce CD on this
                             //SetSpellCooldown(TOTEM_OF_WRATH_1, 30000); //30 sec, old 5 min
@@ -246,7 +246,7 @@ public:
                 if (!_totems[T_WATER].first && !master->m_SummonSlot[T_WATER+1])
                 {
                     uint8 manapct = GetManaPCT(master);
-                    uint8 hppct = GetHealthPCT(master);
+					uint8 hppct = GetHealthPCT(master);
                     if (GetSpell(HEALINGSTREAM_TOTEM_1) && hppct < 98 && master->getPowerType() != POWER_MANA &&
                         (hppct < 25 || manapct > hppct))
                     {
@@ -257,7 +257,7 @@ public:
                             return;
                         }
                     }
-                    else if (GetSpell(MANASPRING_TOTEM_1) && (manapct < 97 || GetManaPCT(me) < 90))
+                 /*   else if (GetSpell(MANASPRING_TOTEM_1) && (manapct < 97 || GetManaPCT(me) < 90))
                     {
                         temptimer = GC_Timer;
                         if (doCast(me, GetSpell(MANASPRING_TOTEM_1)))
@@ -265,7 +265,7 @@ public:
                             GC_Timer = temptimer;
                             return;
                         }
-                    }
+                    }*/
                 }
             }
         }
@@ -486,6 +486,12 @@ public:
                 if (doCast(opponent, GetSpell(STORMSTRIKE_1)))
                     return;
             }
+			//LAVALASH
+			if (IsSpellReady(LAVALASH_1, diff) && HasRole(BOT_ROLE_DPS) && meleedist <= 5 && IsMelee() && Rand() < 70)
+			{
+				if (doCast(opponent, GetSpell(LAVALASH_1)))
+					return;
+			}
             //SHOCKS
             if ((GetSpell(FLAME_SHOCK_1) || GetSpell(EARTH_SHOCK_1) || GetSpell(FROST_SHOCK_1)) &&
                 IsSpellReady(FLAME_SHOCK_1, diff) && HasRole(BOT_ROLE_DPS) && dist < 25 && Rand() < 30)
@@ -606,7 +612,8 @@ public:
                     SHIELD = GetSpell(WATER_SHIELD_1);
                     shield = me->GetAura(SHIELD);
                 }
-                if (shield && shield->GetCharges() < 5)
+             //   if (shield && shield->GetCharges() < 5)
+				  if (!shield)
                 {
                     temptimer = GC_Timer;
                     if (doCast(me, SHIELD))
@@ -620,7 +627,7 @@ public:
 
         bool BuffTarget(Unit* target, uint32 diff)
         {
-            if (!GetSpell(WATER_WALKING_1) && !GetSpell(WATER_BREATHING_1) && !GetSpell(EARTH_SHIELD_1))
+            if (!GetSpell(WATER_WALKING_1) && !GetSpell(EARTH_SHIELD_1))
                 return false;
 
             if (GC_Timer > diff || !target || !target->IsAlive() || Rand() > 40)
@@ -649,9 +656,9 @@ public:
             if (target->HasUnitMovementFlag(MOVEMENTFLAG_SWIMMING))
             {
                 //bots don't need water breathing
-                if (GetSpell(WATER_BREATHING_1) && target->GetTypeId() == TYPEID_PLAYER &&
+               /* if (GetSpell(WATER_BREATHING_1) && target->GetTypeId() == TYPEID_PLAYER &&
                     !target->HasAuraType(SPELL_AURA_WATER_BREATHING) &&
-                    doCast(target, GetSpell(WATER_BREATHING_1)))
+                    doCast(target, GetSpell(WATER_BREATHING_1)))*/
                 {
                     //GC_Timer = 800;
                     return true;
@@ -695,10 +702,10 @@ public:
 
             if (IsCasting()) return false;
 
-            if (IsSpellReady(LESSER_HEALING_WAVE_1, diff) &&
+            if (IsSpellReady(HEALING_SURGE_1, diff) &&
                 ((hp > 70 && hp < 85) || hp < 50 || GetLostHP(target) > 1800) && Rand() < 75)
             {
-                if (doCast(target, GetSpell(LESSER_HEALING_WAVE_1)))
+                if (doCast(target, GetSpell(HEALING_SURGE_1)))
                     return true;
             }
             if (IsSpellReady(HEALING_WAVE_1, diff) &&
@@ -867,7 +874,7 @@ public:
             {
                 if (spellId == GetSpell(HEALING_WAVE_1))
                     flat_mod += spellpower * 0.2f * me->CalculateDefaultCoefficient(spellInfo, damagetype) * stack * 1.88f * me->CalculateLevelPenalty(spellInfo) * stack;
-                else if (spellId == GetSpell(LESSER_HEALING_WAVE_1))
+                else if (spellId == GetSpell(HEALING_SURGE_1))
                     flat_mod += spellpower * 0.1f * me->CalculateDefaultCoefficient(spellInfo, damagetype) * stack * 1.88f * me->CalculateLevelPenalty(spellInfo) * stack;
             }
 
@@ -912,17 +919,50 @@ public:
                 case SUMMON_TYPE_TOTEM_FIRE:
                     slot = T_FIRE;
                     break;
+				case SUMMON_TYPE_TOTEM_FIRE2:
+					slot = T_FIRE;
+					break;
+				case SUMMON_TYPE_TOTEM_FIRE3:
+					slot = T_FIRE;
+					break;
+				case SUMMON_TYPE_TOTEM_FIRE4:
+					slot = T_FIRE;
+					break;
+				case SUMMON_TYPE_TOTEM:
+					slot = T_EARTH;
+					break;
                 case SUMMON_TYPE_TOTEM_EARTH:
                     slot = T_EARTH;
                     break;
+				case SUMMON_TYPE_TOTEM_EARTH2:
+					slot = T_EARTH;
+					break;
+				case SUMMON_TYPE_TOTEM_EARTH3:
+					slot = T_EARTH;
+					break;
                 case SUMMON_TYPE_TOTEM_WATER:
                     slot = T_WATER;
                     break;
+				case SUMMON_TYPE_TOTEM_WATER2:
+					slot = T_WATER;
+					break;
                 case SUMMON_TYPE_TOTEM_AIR:
                     slot = T_AIR;
                     break;
+				case SUMMON_TYPE_TOTEM_AIR2:
+					slot = T_AIR;
+					break;                
+				case SUMMON_TYPE_TOTEM_AIR3:
+					slot = T_AIR;
+					break;                
+				case SUMMON_TYPE_TOTEM_AIR4:
+					slot = T_AIR;
+					break;                
+				case SUMMON_TYPE_TOTEM_AIR5:
+					slot = T_AIR;
+					break;
                 default:
-                    sLog->outError(LOG_FILTER_PLAYER, "SummonedCreatureDespawn(): Shaman bot %s has despawned totem %s with unknown type %u", me->GetName(), summon->GetName(), totem->m_Properties->Id);
+                    sLog->outError(LOG_FILTER_PLAYER, "SummonedCreatureDespawn(): Shaman bot %s has despawned totem %s with n type %u", me->GetName(), summon->GetName(), totem->m_Properties->Id);
                     return;
             }
 
@@ -1145,7 +1185,7 @@ public:
             uint8 lvl = me->getLevel();
             InitSpellMap(HEALING_WAVE_1);
             InitSpellMap(CHAIN_HEAL_1);
-            InitSpellMap(LESSER_HEALING_WAVE_1);
+       //     InitSpellMap(LESSER_HEALING_WAVE_1);
   /*Talent*/lvl >= 60 ? InitSpellMap(RIPTIDE_1) : RemoveSpell(RIPTIDE_1);
             InitSpellMap(ANCESTRAL_SPIRIT_1);
             CURE_TOXINS = lvl >= 39 ? InitSpell(me, CLEANSE_SPIRIT_1) : InitSpell(me, CURE_TOXINS_1);
@@ -1154,6 +1194,7 @@ public:
             InitSpellMap(EARTH_SHOCK_1);
             InitSpellMap(FROST_SHOCK_1);
   /*Talent*/lvl >= 40 ? InitSpellMap(STORMSTRIKE_1) : RemoveSpell(STORMSTRIKE_1);
+            lvl >= 10 ? InitSpellMap(LAVALASH_1) : RemoveSpell(LAVALASH_1);
             InitSpellMap(LIGHTNING_BOLT_1);
             InitSpellMap(CHAIN_LIGHTNING_1);
             InitSpellMap(LAVA_BURST_1);
@@ -1161,19 +1202,19 @@ public:
             InitSpellMap(LIGHTNING_SHIELD_1);
   /*Talent*/lvl >= 50 ? InitSpellMap(EARTH_SHIELD_1) : RemoveSpell(EARTH_SHIELD_1);
      /*NYI*///InitSpellMap(WATER_SHIELD_1);
-            InitSpellMap(WATER_BREATHING_1);
+        //    InitSpellMap(WATER_BREATHING_1);
             InitSpellMap(WATER_WALKING_1);
   /*CUSTOM*/lvl >= 60 ? InitSpellMap(BLOODLUST_1) : RemoveSpell(BLOODLUST_1);
             InitSpellMap(PURGE_1);
             InitSpellMap(WIND_SHEAR_1);
             InitSpellMap(HEX_1);
-   /*Quest*/lvl >= 10 ? InitSpellMap(STONESKIN_TOTEM_1) : RemoveSpell(STONESKIN_TOTEM_1);
+   /*Quest*/lvl >= 54 ? InitSpellMap(TREMOR_TOTEM_1) : RemoveSpell(TREMOR_TOTEM_1);
             InitSpellMap(HEALINGSTREAM_TOTEM_1);
-            InitSpellMap(MANASPRING_TOTEM_1);
+     //       InitSpellMap(MANASPRING_TOTEM_1);
    /*Quest*/lvl >= 10 ? InitSpellMap(SEARING_TOTEM_1) : RemoveSpell(SEARING_TOTEM_1);
-            InitSpellMap(WINDFURY_TOTEM_1);
-            InitSpellMap(STRENGTH_OF_EARTH_TOTEM_1);
-  /*Talent*/lvl >= 50 ? InitSpellMap(TOTEM_OF_WRATH_1) : RemoveSpell(TOTEM_OF_WRATH_1);
+    //        InitSpellMap(WINDFURY_TOTEM_1);
+            lvl >= 54 ? InitSpellMap(EARTH_ELEMENTAL_TOTEM_1) : RemoveSpell(EARTH_ELEMENTAL_TOTEM_1);
+  /*Talent*/lvl >= 36 ? InitSpellMap(MAGMA_TOTEM_1) : RemoveSpell(MAGMA_TOTEM_1);
   /*Talent*/lvl >= 40 ? InitSpellMap(MANA_TIDE_TOTEM_1) : RemoveSpell(MANA_TIDE_TOTEM_1);
         }
 
@@ -1181,33 +1222,32 @@ public:
         {
             uint8 level = master->getLevel();
 
-            RefreshAura(ELEMENTAL_WARDING, level >= 58 ? 2 : level >= 15 ? 1 : 0);
-            RefreshAura(ELEMENTAL_DEVASTATION3, level >= 18 ? 1 : 0);
-            RefreshAura(ELEMENTAL_DEVASTATION2, level >= 15 && level < 18 ? 1 : 0);
-            RefreshAura(ELEMENTAL_DEVASTATION1, level >= 12 && level < 15 ? 1 : 0);
-            RefreshAura(ANCESTRAL_KNOWLEDGE, level >= 30 ? 3 : level >= 20 ? 2 : level >= 10 ? 1 : 0);
-            RefreshAura(TOUGHNESS, level >= 25 ? 1 : 0);
-            RefreshAura(FLURRY5, level >= 29 ? 1 : 0);
-            RefreshAura(FLURRY4, level >= 28 && level < 29 ? 1 : 0);
-            RefreshAura(FLURRY3, level >= 27 && level < 28 ? 1 : 0);
-            RefreshAura(FLURRY2, level >= 26 && level < 27 ? 1 : 0);
-            RefreshAura(FLURRY1, level >= 25 && level < 26 ? 1 : 0);
-            RefreshAura(WEAPON_MASTERY, level >= 50 ? 3 : level >= 40 ? 2 : level >= 30 ? 1 : 0);
+         //   RefreshAura(ELEMENTAL_WARDING, level >= 58 ? 2 : level >= 15 ? 1 : 0);
+          //  RefreshAura(ELEMENTAL_DEVASTATION3, level >= 18 ? 1 : 0);
+          //  RefreshAura(ELEMENTAL_DEVASTATION2, level >= 15 && level < 18 ? 1 : 0);
+           // RefreshAura(ELEMENTAL_DEVASTATION1, level >= 12 && level < 15 ? 1 : 0);
+           // RefreshAura(ANCESTRAL_KNOWLEDGE, level >= 30 ? 3 : level >= 20 ? 2 : level >= 10 ? 1 : 0);
+           // RefreshAura(TOUGHNESS, level >= 25 ? 1 : 0);
+           // RefreshAura(FLURRY5, level >= 29 ? 1 : 0);
+           // RefreshAura(FLURRY4, level >= 28 && level < 29 ? 1 : 0);
+           // RefreshAura(FLURRY3, level >= 27 && level < 28 ? 1 : 0);
+           // RefreshAura(FLURRY2, level >= 26 && level < 27 ? 1 : 0);
+           // RefreshAura(FLURRY1, level >= 25 && level < 26 ? 1 : 0);
+            //RefreshAura(WEAPON_MASTERY, level >= 50 ? 3 : level >= 40 ? 2 : level >= 30 ? 1 : 0);
             RefreshAura(STATIC_SHOCK, level >= 45 ? 2 : level >= 41 ? 1 : 0);
-            RefreshAura(ANCESTRAL_HEALING, level >= 20 ? 1 : 0);
-            RefreshAura(ANCESTRAL_AWAKENING, level >= 50 ? 1 : 0);
+        //    RefreshAura(ANCESTRAL_HEALING, level >= 20 ? 1 : 0);
             RefreshAura(SHAMAN_T10_RESTO_4P, level >= 70 ? 1 : 0);
-            RefreshAura(MAELSTROM_WEAPON5, level >= 70 ? 2 : level >= 60 ? 1 : 0);
-            RefreshAura(MAELSTROM_WEAPON4, level >= 55 && level < 60 ? 1 : 0);
-            RefreshAura(MAELSTROM_WEAPON3, level >= 50 && level < 55 ? 1 : 0);
-            RefreshAura(MAELSTROM_WEAPON2, level >= 45 && level < 50 ? 1 : 0);
-            RefreshAura(MAELSTROM_WEAPON1, level >= 40 && level < 45 ? 1 : 0);
+        //    RefreshAura(MAELSTROM_WEAPON5, level >= 70 ? 2 : level >= 60 ? 1 : 0);
+        //    RefreshAura(MAELSTROM_WEAPON4, level >= 55 && level < 60 ? 1 : 0);
+        //    RefreshAura(MAELSTROM_WEAPON3, level >= 50 && level < 55 ? 1 : 0);
+        //    RefreshAura(MAELSTROM_WEAPON2, level >= 45 && level < 50 ? 1 : 0);
+        //    RefreshAura(MAELSTROM_WEAPON1, level >= 40 && level < 45 ? 1 : 0);
             RefreshAura(UNLEASHED_RAGE, level >= 40 ? 1 : 0);
             RefreshAura(IMPROVED_STORMSTRIKE, level >= 40 ? 1 : 0);
             RefreshAura(ELEMENTAL_OATH, level >= 40 ? 1 : 0);
-            RefreshAura(EARTHLIVING_WEAPON_PASSIVE_6, level >= 70 ? 3 : 0);
-            RefreshAura(EARTHLIVING_WEAPON_PASSIVE_5, level >= 50 && level < 70 ? 3 : 0);
-            RefreshAura(EARTHLIVING_WEAPON_PASSIVE_4, level >= 30 && level < 50 ? 3 : 0);
+         //   RefreshAura(EARTHLIVING_WEAPON_PASSIVE_6, level >= 70 ? 3 : 0);
+         //   RefreshAura(EARTHLIVING_WEAPON_PASSIVE_5, level >= 50 && level < 70 ? 3 : 0);
+        //    RefreshAura(EARTHLIVING_WEAPON_PASSIVE_4, level >= 30 && level < 50 ? 3 : 0);
         }
 
         bool CanUseManually(uint32 basespell) const
@@ -1216,7 +1256,7 @@ public:
             {
                 case HEALING_WAVE_1:
                 case CHAIN_HEAL_1:
-                case LESSER_HEALING_WAVE_1:
+                case HEALING_SURGE_1:
                 case RIPTIDE_1:
                 case CURE_TOXINS_1:
                 case CLEANSE_SPIRIT_1:
@@ -1242,7 +1282,7 @@ public:
         {
             HEALING_WAVE_1                      = 331,
             CHAIN_HEAL_1                        = 1064,
-            LESSER_HEALING_WAVE_1               = 8004,
+            HEALING_SURGE_1                     = 8004,
             RIPTIDE_1                           = 61295,
             ANCESTRAL_SPIRIT_1                  = 2008,
             CURE_TOXINS_1                       = 526,
@@ -1251,57 +1291,59 @@ public:
             EARTH_SHOCK_1                       = 8042,
             FROST_SHOCK_1                       = 8056,
             STORMSTRIKE_1                       = 17364,
+			LAVALASH_1                          = 60103,
             LIGHTNING_BOLT_1                    = 403,
             CHAIN_LIGHTNING_1                   = 421,
             LAVA_BURST_1                        = 51505,
             THUNDERSTORM_1                      = 51490,
+			FERALSPORIT_1                       = 51533,
             LIGHTNING_SHIELD_1                  = 324,
             EARTH_SHIELD_1                      = 974,
             WATER_SHIELD_1                      = 52127,
-            WATER_BREATHING_1                   = 131,
+      //removed      WATER_BREATHING_1                   = 131,
             WATER_WALKING_1                     = 546,
             //BLOODLUST_1                         = 54516,//custom, moved to specials
             PURGE_1                             = 370,
             WIND_SHEAR_1                        = 57994,
             HEX_1                               = 51514,
-            STONESKIN_TOTEM_1                   = 8071,
+			TREMOR_TOTEM_1                      = 8143,
             HEALINGSTREAM_TOTEM_1               = 5394,
-            MANASPRING_TOTEM_1                  = 5675,
+     //removed       MANASPRING_TOTEM_1                  = 5675,
             SEARING_TOTEM_1                     = 3599,
-            WINDFURY_TOTEM_1                    = 8512,
-            STRENGTH_OF_EARTH_TOTEM_1           = 8075,
-            TOTEM_OF_WRATH_1                    = 30706,
+      //removed      WINDFURY_TOTEM_1                    = 8512,
+       //removed     STRENGTH_OF_EARTH_TOTEM_1           = 8075,
+	        EARTH_ELEMENTAL_TOTEM_1            = 2062,
+            MAGMA_TOTEM_1                       = 8190,
             MANA_TIDE_TOTEM_1                   = 16190
         };
 
         enum ShamanPassives
         {
             //Elemental
-            ELEMENTAL_DEVASTATION1              = 30160,
-            ELEMENTAL_DEVASTATION2              = 29179,
-            ELEMENTAL_DEVASTATION3              = 29180,
-            ELEMENTAL_WARDING                   = 28998,//rank 3
+         //removed   ELEMENTAL_DEVASTATION1              = 30160,
+       //removed     ELEMENTAL_DEVASTATION2              = 29179,
+       //removeD     ELEMENTAL_DEVASTATION3              = 29180,
+     //removed       ELEMENTAL_WARDING                   = 28998,//rank 3
             ELEMENTAL_OATH                      = 51470,//rank 2
             //Enchancement
-            ANCESTRAL_KNOWLEDGE                 = 17489,//rank 5
-            TOUGHNESS                           = 16309,//rank 5
-            FLURRY1                             = 16256,
-            FLURRY2                             = 16281,
-            FLURRY3                             = 16282,
-            FLURRY4                             = 16283,
-            FLURRY5                             = 16284,
-            WEAPON_MASTERY                      = 29086,//rank 3
+        //removed    ANCESTRAL_KNOWLEDGE                 = 17489,//rank 5
+      //removed      TOUGHNESS                           = 16309,//rank 5
+        //    FLURRY1                             = 16256,
+        //    FLURRY2                             = 16281,
+        //    FLURRY3                             = 16282,
+        //    FLURRY4                             = 16283,
+        //    FLURRY5                             = 16284,
+        //    WEAPON_MASTERY                      = 29086,//rank 3
             UNLEASHED_RAGE                      = 30809,//rank 3
             STATIC_SHOCK                        = 51527,//rank 3
             IMPROVED_STORMSTRIKE                = 51522,//rank 2
-            MAELSTROM_WEAPON1                   = 51528,
-            MAELSTROM_WEAPON2                   = 51529,
-            MAELSTROM_WEAPON3                   = 51530,
-            MAELSTROM_WEAPON4                   = 51531,
-            MAELSTROM_WEAPON5                   = 51532,
+        //    MAELSTROM_WEAPON1                   = 51528,
+        //    MAELSTROM_WEAPON2                   = 51529,
+        //    MAELSTROM_WEAPON3                   = 51530,
+        //    MAELSTROM_WEAPON4                   = 51531,
+       //     MAELSTROM_WEAPON5                   = 51532,
             //Restoration
-            ANCESTRAL_HEALING                   = 16240,//rank 3
-            ANCESTRAL_AWAKENING                 = 51558,//rank 3
+       //     ANCESTRAL_HEALING                   = 16240,//rank 3
             //Special
             SHAMAN_T10_RESTO_4P                 = 70808 //Chain Heal HoT
         };
@@ -1320,9 +1362,9 @@ public:
             //no penalty
             BLOODLUST_1                         = 54516,
             //20% chance to put HoT on healed target over 12 sec
-            EARTHLIVING_WEAPON_PASSIVE_4        = 52005,//348 base hp
-            EARTHLIVING_WEAPON_PASSIVE_5        = 52007,//456 base hp
-            EARTHLIVING_WEAPON_PASSIVE_6        = 52008,//652 base hp
+       //     EARTHLIVING_WEAPON_PASSIVE_4        = 52005,//348 base hp
+      //      EARTHLIVING_WEAPON_PASSIVE_5        = 52007,//456 base hp
+     //       EARTHLIVING_WEAPON_PASSIVE_6        = 52008,//652 base hp
 
             MAELSTROM_WEAPON_BUFF               = 53817,
             STORMSTRIKE_DAMAGE                  = 32175,
