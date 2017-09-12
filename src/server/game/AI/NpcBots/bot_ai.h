@@ -72,6 +72,9 @@ enum CommonValues
     GOSSIP_CLASS_BM                     = 70004,
     GOSSIP_SENDER_BEGIN                 = 6000,
     GOSSIP_SENDER_CLASS,
+    //thesawolf - mage portals
+    GOSSIP_SENDER_PORTAL,
+    GOSSIP_SENDER_PORTCHOICE,
     GOSSIP_SENDER_EQUIPMENT,
     GOSSIP_SENDER_EQUIPMENT_LIST,
     GOSSIP_SENDER_EQUIPMENT_SHOW,
@@ -135,6 +138,13 @@ enum CommonValues
     GOSSIP_SENDER_SCAN_OWNER_ABILITY,
     GOSSIP_SENDER_DEBUG,
     GOSSIP_SENDER_DEBUG_ACTION,
+    //thesawolf - add in faction set gossip
+    GOSSIP_SENDER_EARLYDISMISS,
+    GOSSIP_SENDER_FACTION,
+    GOSSIP_SENDER_FACTION_ALLIANCE,
+    GOSSIP_SENDER_FACTION_HORDE,
+    GOSSIP_SENDER_FACTION_MONSTER,
+    GOSSIP_SENDER_FACTION_FRIEND,
 //COMMON NPCS
     NPC_WORLD_TRIGGER                   = 22515,
 //COMMON GAMEEVENTS
@@ -564,8 +574,9 @@ class bot_ai : public ScriptedAI
         virtual void Evade(bool = false) {}
         virtual void OnStartAttack(Unit* /*u*/) {}
 
-        virtual void ApplyClassDamageMultiplierMelee(uint32& /*damage*/, CalcDamageInfo& /*damageinfo*/) const {}
-        virtual void ApplyClassDamageMultiplierMelee(int32& /*damage*/, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* /*spellInfo*/, WeaponAttackType /*attackType*/, bool& /*crit*/) const {}
+        //thesawolf melee fix test
+        virtual void ApplyClassDamageMultiplierMelee(uint32& damage, CalcDamageInfo& damageinfo) const {}
+        virtual void ApplyClassDamageMultiplierMelee(int32& damage, SpellNonMeleeDamage& damageinfo, SpellInfo const* /*spellInfo*/, WeaponAttackType /*attackType*/, bool& /*crit*/) const {}
         virtual void ApplyClassDamageMultiplierSpell(int32& /*damage*/, SpellNonMeleeDamage& /*damageinfo*/, SpellInfo const* /*spellInfo*/, WeaponAttackType /*attackType*/, bool& /*crit*/) const {}
         virtual void ApplyClassDamageMultiplierHeal(Unit const* /*victim*/, float& /*heal*/, SpellInfo const* /*spellInfo*/, DamageEffectType /*damagetype*/, uint32 /*stack*/) const {}
         virtual void ApplyClassCritMultiplierHeal(Unit const* /*victim*/, float& /*crit_chance*/, SpellInfo const* /*spellInfo*/, SpellSchoolMask /*schoolMask*/, WeaponAttackType /*attackType*/) const {}
@@ -588,7 +599,8 @@ class bot_ai : public ScriptedAI
         virtual void ApplyClassPassives() = 0;
         virtual void _OnHealthUpdate() const = 0;
         virtual void _OnManaUpdate(bool /*shapeshift*/ = false) = 0;
-        //virtual void _OnMeleeDamageUpdate(uint8 /*myclass*/) const = 0;
+        //thesawolf melee fix test
+        virtual void _OnMeleeDamageUpdate(uint8 /*myclass*/) const = 0;
         virtual void Regenerate() = 0;
 
         //virtual void ReceiveEmote(Player* /*player*/, uint32 /*emote*/) {}
@@ -640,6 +652,8 @@ class bot_ai : public ScriptedAI
         void BotSay(char const* text, Player const* target = NULL) const;
         void BotWhisper(char const* text, Player* target = NULL) const;
         void BotYell(char const* text, Player const* target = NULL) const;
+        // thesawolf - let's add audio cues
+        //bool PlaySound(uint32 emote);
 
         typedef std::pair<uint32 /*spellId*/, uint32 /*cooldown*/> BotSpell;
         typedef std::unordered_map<uint32 /*spellId_1*/, BotSpell /*spell*/> BotSpellMap;
@@ -897,7 +911,8 @@ class bot_pet_ai : public bot_ai
         void InitSpells() {}
         void _OnHealthUpdate() const;
         void _OnManaUpdate(bool shapeshift = false);
-        //void _OnMeleeDamageUpdate(uint8 /*myclass*/) const {}
+        // thesawolf melee fix test
+        void _OnMeleeDamageUpdate(uint8 /*myclass*/) const {}
         void Regenerate();
         void SetBaseArmor(uint32 armor) { basearmor = armor; }
 

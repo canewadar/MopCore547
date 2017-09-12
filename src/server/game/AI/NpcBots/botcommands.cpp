@@ -205,7 +205,7 @@ public:
 		if (!ubot || !*args)
 		{
 			handler->SendSysMessage(".npcbot set faction #faction");
-			handler->SendSysMessage("Sets faction for selected npcbot (saved in DB). Use 'a', 'h' or 'm' as argument to set faction to alliance, horde or monsters (hostile to all)");
+            handler->SendSysMessage("Sets faction for selected npcbot (saved in DB). Use 'a', 'h', 'm', 'f' as argument to set faction to alliance, horde, monster (hostile to all), or friend (friendly to all)");
 			handler->SetSentErrorMessage(true);
 			return false;
 		}
@@ -228,6 +228,8 @@ public:
 			factionId = 1801; //Horde
 		else if (factionChar[0] == 'm')
 			factionId = 14; //Monsters
+        else if (factionChar[0] == 'f')
+            factionId = 35; //thesawolf - friendly to all
 
 		if (!factionId)
 		{
@@ -570,6 +572,25 @@ public:
 		}
 
 		sObjectMgr->AddCreatureToGrid(db_guid, sObjectMgr->GetCreatureData(db_guid));
+
+        //thesawolf - autoset faction from spawner
+        uint32 factionId = 0;        
+        if(chr->GetTeam() == ALLIANCE)
+            factionId = 1802; //alliance
+        else if(chr->GetTeam() == HORDE)
+            factionId = 1801; //horde
+        else
+            factionId = 35; //friendly to all
+        
+        creature->setFaction(factionId);
+        stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_NPCBOT_FACTION);
+        //"UPDATE characters_npcbot SET faction = ? WHERE entry = ?", CONNECTION_SYNCH
+        stmt->setUInt32(0, factionId);
+        stmt->setUInt32(1, id);
+        CharacterDatabase.DirectExecute(stmt);
+
+        //const_cast<CreatureTemplate*>(creature->GetCreatureTemplate())->faction = factionId;
+            
 
 		handler->SendSysMessage("Npcbot successfully spawned.");
 		return true;
