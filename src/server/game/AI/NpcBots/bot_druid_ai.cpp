@@ -113,7 +113,7 @@ public:
             }
             for (AttackerSet::iterator iter = b_attackers.begin(); iter != b_attackers.end(); ++iter)
             {
-                if (!(*iter) || (*iter)->isDead()) continue;
+                if (!(*iter) || (*iter)->IsDead()) continue;
                 if (!(*iter)->isTargetableForAttack()) continue;
                 if (me->GetDistance((*iter)) <= 5)
                 {
@@ -136,7 +136,7 @@ public:
                 for (GroupReference* itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
                 {
                     Player* tPlayer = itr->GetSource();
-                    if (!tPlayer || tPlayer->isDead()) continue;
+                    if (!tPlayer || tPlayer->IsDead()) continue;
                     if (me->GetExactDist(tPlayer) > 30) continue;
                     if (tPlayer->GetHealth()*100 / tPlayer->GetMaxHealth() < 75)
                         ++LHPcount;
@@ -297,7 +297,7 @@ public:
             //range check to prevent fake casts
             if (me->GetExactDist(opponent) > 30 || !DamagePossible()) return;
 
-            if (IsSpellReady(HURRICANE_1, diff) && !me->isMoving() && HasRole(BOT_ROLE_DPS) && Rand() < 35)
+            if (IsSpellReady(HURRICANE_1, diff) && !me->IsMoving() && HasRole(BOT_ROLE_DPS) && Rand() < 35)
             {
                 Unit* target = FindAOETarget(30, true);
                 if (target && doCast(target, GetSpell(HURRICANE_1)))
@@ -349,7 +349,7 @@ public:
             {
                 Player* tPlayer = itr->GetSource();
                 if (!tPlayer || !tPlayer->IsInWorld() || tPlayer->GetMapId() != me->GetMapId() ||
-                    (tPlayer->isDead() && !tPlayer->HaveBot())) continue;
+                    (tPlayer->IsDead() && !tPlayer->HaveBot())) continue;
                 if (me->GetExactDist(tPlayer) > 39) continue;
                 if (GetHealthPCT(tPlayer) < 80)
                 {
@@ -529,7 +529,7 @@ public:
         {
             if (!HasRole(BOT_ROLE_HEAL)) return false;
             if (hp > 95) return false;
-            if (!target || target->isDead()) return false;
+            if (!target || target->IsDead()) return false;
             if (IsTank() && hp > 35) return false;
             if (hp > 50 && me->GetShapeshiftForm() != FORM_NONE) return false; //do not waste heal if in feral or so
             if (Rand() > 50 + 20*target->IsInCombat() + 50*master->GetMap()->IsRaid() - 50*me->GetShapeshiftForm()) return false;
@@ -698,7 +698,7 @@ public:
                     for (BotMap::const_iterator itr = map->begin(); itr != map->end(); ++itr)
                     {
                         Creature* bot = itr->second;
-                        if (!bot || !bot->IsInCombat() || bot->isDead()) continue;
+                        if (!bot || !bot->IsInCombat() || bot->IsDead()) continue;
                         if (me->GetExactDist(bot) > 30) continue;
                         if (bot->getPowerType() != POWER_MANA) continue;
                         if (GetManaPCT(bot) < minmanaval && !bot->HasAura(INNERVATE))
@@ -713,7 +713,7 @@ public:
                     for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
                     {
                         Player* tPlayer = itr->GetSource();
-                        if (tPlayer == NULL || !tPlayer->IsInWorld() || !tPlayer->IsInCombat() || tPlayer->isDead()) continue;
+                        if (tPlayer == NULL || !tPlayer->IsInWorld() || !tPlayer->IsInCombat() || tPlayer->IsDead()) continue;
                         if (me->GetExactDist(tPlayer) > 30) continue;
                         if (tPlayer->getPowerType() != POWER_MANA) continue;
                         if (GetManaPCT(tPlayer) < minmanaval && !tPlayer->HasAura(INNERVATE))
@@ -735,7 +735,7 @@ public:
                         for (BotMap::const_iterator it = map->begin(); it != map->end(); ++it)
                         {
                             Creature* bot = it->second;
-                            if (!bot || bot->isDead()) continue;
+                            if (!bot || bot->IsDead()) continue;
                             if (me->GetExactDist(bot) > 30) continue;
                             if (bot->getPowerType() != POWER_MANA) continue;
                             if (GetManaPCT(bot) < minmanaval && !bot->HasAura(INNERVATE))

@@ -80,6 +80,9 @@
 #include "MovementStructures.h"
 #include "Config.h"
 #include "GameObjectAI.h"
+ //npcbot
+#include "botmgr.h"
+ //end npcbot
 
     /*** Movement functions - Handled by PlayerMovement. ***/
 
@@ -678,6 +681,11 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             // remove pet on map change
             if (pet)
                 UnsummonPetTemporaryIfAny();
+            
+            //npcbot: teleport npcbots
+            if (HaveBot())
+				_botMgr->OnTeleportFar(mapid, x, y, z, orientation);
+            //end npcbot
 
             // remove all dyn objects and AreaTrigger
             RemoveAllDynObjects();

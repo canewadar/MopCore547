@@ -3088,6 +3088,8 @@ class Player : public Unit, public GridObject<Player>
 
         void SendCUFProfiles();
 
+		uint64 greenGuid;
+		uint64 purpleGuid;
 
         /*********************************************************/
         /***              BATTLE PET SYSTEM                    ***/
@@ -3122,9 +3124,6 @@ class Player : public Unit, public GridObject<Player>
         /*********************************************************/
         /***             END NPCBOT SYSTEM                     ***/
         /*********************************************************/
-
-		uint64 greenGuid;
-		uint64 purpleGuid;
 
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;

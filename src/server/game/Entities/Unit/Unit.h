@@ -1712,7 +1712,7 @@ class Unit : public WorldObject
 
         bool IsAlive() const { return (m_deathState == ALIVE); };
         //npcbot
-        bool IsAlive() const { return isAlive(); }
+        //bool IsAlive() const { return IsAlive(); }
         //end npcbot
         bool IsDying() const { return (m_deathState == JUST_DIED); };
         bool IsDead() const { return (m_deathState == DEAD || m_deathState == CORPSE); };

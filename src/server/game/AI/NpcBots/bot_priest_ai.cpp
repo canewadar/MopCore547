@@ -267,11 +267,11 @@ public:
                         doCast(opponent, GetSpell(MIND_BLAST_1)))
                         return;
                     if (IsSpellReady(MIND_FLAY_1, diff, false) && Rand() < 20 &&
-                        (opponent->isMoving() || opponent->GetHealth() < me->GetMaxHealth()/5 ||
+                        (opponent->IsMoving() || opponent->GetHealth() < me->GetMaxHealth()/5 ||
                         (HasAuraName(opponent, SW_PAIN_1, me->GetGUID()) && HasAuraName(opponent, DEVOURING_PLAGUE_1, me->GetGUID()))) &&
                         doCast(opponent, GetSpell(MIND_FLAY_1)))
                         return;
-                    if (IsSpellReady(MIND_SEAR_1, diff, false) && !opponent->isMoving() && dist < 35 && Rand() < 50 &&
+                    if (IsSpellReady(MIND_SEAR_1, diff, false) && !opponent->IsMoving() && dist < 35 && Rand() < 50 &&
                         HasAuraName(opponent, SW_PAIN_1, me->GetGUID()) &&
                         HasAuraName(opponent, DEVOURING_PLAGUE_1, me->GetGUID()))
                     {
@@ -362,7 +362,7 @@ public:
             //PENANCE/Greater Heal
             if (hp < 75 || GetLostHP(target) > 4000)
             {
-                if (IsSpellReady(PENANCE_1, diff, false) && !me->isMoving() && Rand() < 80 &&
+                if (IsSpellReady(PENANCE_1, diff, false) && !me->IsMoving() && Rand() < 80 &&
                     (target->GetTypeId() != TYPEID_PLAYER ||
                     !(target->ToPlayer()->IsCharmed() || target->ToPlayer()->isPossessed())) &&
                     doCast(target, GetSpell(PENANCE_1)))
@@ -398,7 +398,7 @@ public:
 
         bool BuffTarget(Unit* target, uint32 diff)
         {
-            if (!target || !target->IsInWorld() || target->isDead() ||
+            if (!target || !target->IsInWorld() || target->IsDead() ||
                 GC_Timer > diff || me->GetExactDist(target) > 30 || Rand() > 20)
                 return false;
 
@@ -593,7 +593,7 @@ public:
                     for (AttackerSet::iterator iter = b_attackers.begin(); iter != b_attackers.end(); ++iter)
                     {
                         if (!(*iter)) continue;
-                        if ((*iter)->isDead()) continue;
+                        if ((*iter)->IsDead()) continue;
                         if (!(*iter)->ToCreature()) continue;
                         if (!(*iter)->CanHaveThreatList()) continue;
                         if (me->GetExactDist((*iter)) < 15)

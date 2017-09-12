@@ -2205,7 +2205,7 @@ void Map::AddToActive(Creature* c)
             getNGrid(p.x_coord, p.y_coord)->incUnloadActiveLock();
         //bot
         else if (c->GetIAmABot())
-            EnsureGridLoadedForActiveObject(Cell(Trinity::ComputeCellCoord(c->GetPositionX(), c->GetPositionY())), c);
+            EnsureGridLoadedForActiveObject(Cell(MoPCore::ComputeCellCoord(c->GetPositionX(), c->GetPositionY())), c);
         //end bot
         else
         {
@@ -2230,7 +2230,7 @@ void Map::RemoveFromActive(Creature* c)
             getNGrid(p.x_coord, p.y_coord)->decUnloadActiveLock();
         //bot
         else if (c->GetIAmABot())
-            EnsureGridLoaded(Cell(Trinity::ComputeCellCoord(c->GetPositionX(), c->GetPositionY())));
+            EnsureGridLoaded(Cell(MoPCore::ComputeCellCoord(c->GetPositionX(), c->GetPositionY())));
         //end bot
         else
         {

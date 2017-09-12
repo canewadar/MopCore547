@@ -65,20 +65,20 @@ public:
 
 		static ChatCommand npcbotCommandTable[] =
 		{
-			{ "set",        SEC_GAMEMASTER, false, NULL,                "", npcbotSetCommandTable },
-			{ "add",        SEC_VIP, false, &HandleNpcBotAddCommand,    "" },
-			{ "remove",     SEC_VIP, false, &HandleNpcBotRemoveCommand, "" },
-			{ "spawn",      SEC_VIP, false, &HandleNpcBotSpawnCommand,  "" },
-			{ "delete",     SEC_VIP, false, &HandleNpcBotDeleteCommand, "" },
-			{ "lookup",     SEC_VIP, false, &HandleNpcBotLookupCommand, "" },
-			{ "revive",     SEC_VIP, false, &HandleNpcBotReviveCommand, "" },
-			{ "cast",       SEC_GAMEMASTER, false, &HandleNpcBotCastCustomSpell, "" },
+			{ "set",        SEC_PLAYER, false, NULL,                "", npcbotSetCommandTable },
+			{ "add",        SEC_PLAYER, false, &HandleNpcBotAddCommand,    "" },
+			{ "remove",     SEC_PLAYER, false, &HandleNpcBotRemoveCommand, "" },
+			{ "spawn",      SEC_PLAYER, false, &HandleNpcBotSpawnCommand,  "" },
+			{ "delete",     SEC_PLAYER, false, &HandleNpcBotDeleteCommand, "" },
+			{ "lookup",     SEC_PLAYER, false, &HandleNpcBotLookupCommand, "" },
+			{ "revive",     SEC_PLAYER, false, &HandleNpcBotReviveCommand, "" },
+			{ "cast",       SEC_PLAYER, false, &HandleNpcBotCastCustomSpell, "" },
 			{ NULL, SEC_PLAYER, false, NULL, "", NULL }
 		};
 
 		static ChatCommand commandTable[] =
 		{
-			{ "npcbot",     SEC_VIP, false, NULL, "", npcbotCommandTable },
+			{ "npcbot",     SEC_PLAYER, false, NULL, "", npcbotCommandTable },
 			{ NULL, SEC_PLAYER, false, NULL, "", NULL }
 		};
 		return commandTable;

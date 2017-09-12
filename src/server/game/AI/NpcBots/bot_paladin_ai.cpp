@@ -85,7 +85,7 @@ public:
 
         bool HOFTarget(Unit* target, uint32 diff)
         {
-            if (!target || target->isDead()) return false;
+            if (!target || target->IsDead()) return false;
             if (!IsSpellReady(HOF_1, diff)) return false;
             if (target->ToCreature() && Rand() > 25) return false;
             if (me->GetExactDist(target) > 30) return false;//too far away
@@ -137,7 +137,7 @@ public:
                     if (!HOSPlayer) continue;
                     if (HOSPlayer->HaveBot())
                         bots = true;
-                    if (HOSPlayer->isDead()) continue;
+                    if (HOSPlayer->IsDead()) continue;
                     if (IsTank(HOSPlayer)) continue; //tanks do not need it
                     if (!HOSPlayer->IsInWorld() || master->GetMap() != HOSPlayer->FindMap() || me->GetExactDist(HOSPlayer) > 30) continue;
                     if (HasAuraName(HOSPlayer, HOS_1)) continue;
@@ -146,7 +146,7 @@ public:
                     for (AttackerSet::iterator iter = h_attackers.begin(); iter != h_attackers.end(); ++iter)
                     {
                         if (!(*iter)) continue;
-                        if ((*iter)->isDead()) continue;
+                        if ((*iter)->IsDead()) continue;
                         if (!(*iter)->CanHaveThreatList()) continue;
                         threat = (*iter)->getThreatManager().getThreat(HOSPlayer);
                         if (threat < 25.f) continue;//too small threat
@@ -168,7 +168,7 @@ public:
                     for (BotMap::const_iterator it = map->begin(); it != map->end(); ++it)
                     {
                         Creature* cre = it->second;
-                        if (!cre || cre->isDead()) continue;
+                        if (!cre || cre->IsDead()) continue;
                         if (IsTank(cre)) continue;
                         if (me->GetExactDist(cre) > 30) continue;
                         if (HasAuraName(cre, HOS_1)) continue; //Alredy has HOS
@@ -177,7 +177,7 @@ public:
                         for (AttackerSet::iterator iter = h_attackers.begin(); iter != h_attackers.end(); ++iter)
                         {
                             if (!(*iter)) continue;
-                            if ((*iter)->isDead()) continue;
+                            if ((*iter)->IsDead()) continue;
                             if (!(*iter)->CanHaveThreatList()) continue;
                             threat = (*iter)->getThreatManager().getThreat(cre);
                             if (threat < 25.f) continue;//too small threat
@@ -193,7 +193,7 @@ public:
 
         bool HOSTarget(Unit* target, uint32 diff)
         {
-            if (!target || target->isDead()) return false;
+            if (!target || target->IsDead()) return false;
             if (!IsSpellReady(HOS_1, diff) || Rand() > 50) return false;
             if (IsTank(target)) return false; //tanks do not need it
             if (IsCasting()) return false; //I'm busy casting
@@ -207,7 +207,7 @@ public:
             for (AttackerSet::iterator iter = h_attackers.begin(); iter != h_attackers.end(); ++iter)
             {
                 if (!(*iter)) continue;
-                if ((*iter)->isDead()) continue;
+                if ((*iter)->IsDead()) continue;
                 if (!(*iter)->CanHaveThreatList()) continue;
                 threat = (*iter)->getThreatManager().getThreat(target);
                 if (threat < 25.f) continue; //too small threat
@@ -227,7 +227,7 @@ public:
         //Holy_Shock setup (Modify HERE)
         bool HS(Unit* target, uint32 diff)
         {
-            if (!target || target->isDead()) return false;
+            if (!target || target->IsDead()) return false;
             if (!IsSpellReady(HOLY_SHOCK_1, diff)) return false;
             if (IsCasting()) return false;
             if (target->GetTypeId() == TYPEID_PLAYER && (target->IsCharmed() || target->isPossessed()))
@@ -246,7 +246,7 @@ public:
         bool HealTarget(Unit* target, uint8 hp, uint32 diff)
         {
             if (!HasRole(BOT_ROLE_HEAL)) return false;
-            if (!target || target->isDead()) return false;
+            if (!target || target->IsDead()) return false;
             if (hp > 97) return false;
             //sLog->outBasic("HealTarget() by %s on %s", me->GetName().c_str(), target->GetName().c_str());
             if (Rand() > 40 + 20*target->IsInCombat() + 50*master->GetMap()->IsRaid()) return false;
@@ -456,7 +456,7 @@ public:
 
         bool BuffTarget(Unit* target, uint32 diff)
         {
-            if (!target || target->isDead() || GC_Timer > diff || Rand() > 30) return false;
+            if (!target || target->IsDead() || GC_Timer > diff || Rand() > 30) return false;
             if (me->IsInCombat() && !master->GetMap()->IsRaid()) return false;
             if (me->GetExactDist(target) > 30) return false;
             //if (HasAuraName(target, BLESSING_OF_WISDOM_1, me->GetGUID()) ||
@@ -679,7 +679,7 @@ public:
             }
 
             if (IsSpellReady(CONSECRATION_1, diff) && HasRole(BOT_ROLE_DPS) && me->GetDistance(opponent) < 7 &&
-                !opponent->isMoving() && Rand() < 50)
+                !opponent->IsMoving() && Rand() < 50)
             {
                 if (doCast(me, GetSpell(CONSECRATION_1)))
                     return;

@@ -416,7 +416,7 @@ public:
                 Rand() > (10 + 20 * (me->IsInCombat() || master->IsInCombat())))
                 return;
 
-            if (!IAmFree() && master->isMoving())
+            if (!IAmFree() && master->IsMoving())
             {
                 if (me->GetDistance(master) > 30 &&
                     doCast(me, GetSpell(WINDWALK_1)))
@@ -430,7 +430,7 @@ public:
                 //unit to strike
                 Unit* u = IsMelee() ? me->GetVictim() : NULL;
 
-                if ((u && u->isMoving() && me->GetDistance(u) > 18 &&
+                if ((u && u->IsMoving() && me->GetDistance(u) > 18 &&
                     (u->GetVictim() != me || u->getAttackers().size() > uint8(u->IsControlledByPlayer() ? 0 : 1))) ||
                     me->getAttackers().size() > 2)
                 {

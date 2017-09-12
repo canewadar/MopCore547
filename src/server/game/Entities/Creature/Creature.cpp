@@ -1896,19 +1896,17 @@ void Creature::Respawn(bool force)
 
 		GetMotionMaster()->InitDefault();
 
-        //Call AI respawn virtual function
-        if (IsAIEnabled)
-        //npcbot - not for bots
-        {
-            //if (!bot_AI)
-            // Reset the AI to be sure no dirty or uninitialized values will be used till next tick
-            /*AI()->Reset();*/
-        //end npcbot
-            TriggerJustRespawned = true;//delay event to next tick so all creatures are created on the map before processing
-        //npcbot
-        }
-        //end npcbot
-        }
+		//Call AI respawn virtual function
+		if (IsAIEnabled)
+			//npcbot - not for bots
+		{
+			//if (!bot_AI)
+			/*AI()->Reset();*/
+			//end npcbot
+			TriggerJustRespawned = true;//delay event to next tick so all creatures are created on the map before processing
+										//npcbot
+		}
+		//end npcbot
 
         uint32 poolid = GetDBTableGUIDLow() ? sPoolMgr->IsPartOfAPool<Creature>(GetDBTableGUIDLow()) : 0;
         if (poolid)

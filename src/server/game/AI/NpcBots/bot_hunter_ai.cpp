@@ -476,7 +476,7 @@ public:
             //Deterrence check
             if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED))
             {
-                if (!me->isMoving())
+                if (!me->IsMoving())
                     GetInPosition(true);
                 return;
             }
@@ -555,7 +555,7 @@ public:
                     }
                 }
                 //WING CLIP
-                if (IsSpellReady(WING_CLIP_1, diff) && (!IsTank() || opponent->isMoving()) &&
+                if (IsSpellReady(WING_CLIP_1, diff) && (!IsTank() || opponent->IsMoving()) &&
                     Rand() < 80 && !opponent->HasAuraWithMechanic(/*(1<<MECHANIC_SNARE)|*/(1<<MECHANIC_ROOT)))
                 {
                     if (doCast(opponent, GetSpell(WING_CLIP_1)))
@@ -703,7 +703,7 @@ public:
                 SetSpellCooldown(MULTISHOT_1, 1000); //fail
             }
             //VOLLEY
-            if (IsSpellReady(VOLLEY_1, diff) && HasRole(BOT_ROLE_DPS) && !me->isMoving() && Rand() < 25)
+            if (IsSpellReady(VOLLEY_1, diff) && HasRole(BOT_ROLE_DPS) && !me->IsMoving() && Rand() < 25)
             {
                 if (Unit* target = FindAOETarget(35, true, false))
                 {

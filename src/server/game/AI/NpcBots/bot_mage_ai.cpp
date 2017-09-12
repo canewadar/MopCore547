@@ -506,7 +506,7 @@ public:
                     for (GroupReference* itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
                     {
                         Player* pPlayer = itr->GetSource();
-                        if (!pPlayer || !pPlayer->IsInWorld() || pPlayer->isDead()) continue;
+                        if (!pPlayer || !pPlayer->IsInWorld() || pPlayer->IsDead()) continue;
                         if (me->GetMapId() != pPlayer->GetMapId()) continue;
                         if (pPlayer->getPowerType() == POWER_MANA && me->GetExactDist(pPlayer) < 30 &&
                             !pPlayer->HasAura(FOCUSMAGIC))
@@ -526,7 +526,7 @@ public:
                             for (BotMap::const_iterator it = map->begin(); it != map->end(); ++it)
                             {
                                 Creature* cre = it->second;
-                                if (!cre || !cre->IsInWorld() || cre == me || cre->isDead()) continue;
+                                if (!cre || !cre->IsInWorld() || cre == me || cre->IsDead()) continue;
                                 if (cre->getPowerType() == POWER_MANA && me->GetExactDist(cre) < 30 &&
                                     !cre->HasAura(FOCUSMAGIC))
                                 {

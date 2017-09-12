@@ -767,7 +767,7 @@ public:
             //CHAINS OF ICE
             if (uint32 CHAINS_OF_ICE = GetSpell(CHAINS_OF_ICE_1))
             {
-                if (GC_Timer <= diff && dist < 20 && HaveRune(RUNE_FROST) && opponent->isMoving() &&
+                if (GC_Timer <= diff && dist < 20 && HaveRune(RUNE_FROST) && opponent->IsMoving() &&
                     !CCed(opponent) && !IsTank(opponent->GetVictim()) && IsInBotParty(opponent->GetVictim()) && Rand() < 25)
                 {
                     Aura* chains = opponent->GetAura(CHAINS_OF_ICE).get();

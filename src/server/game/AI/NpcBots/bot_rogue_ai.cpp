@@ -288,7 +288,7 @@ public:
 
             //RUPTURE
             if (IsSpellReady(RUPTURE_1, diff) && HasRole(BOT_ROLE_DPS) && meleedist <= 5 && comboPoints > 3 && getenergy() >= 25 &&
-                opponent->GetHealth() > me->GetMaxHealth()/3 && Rand() < (50 + 70 * opponent->isMoving()))
+                opponent->GetHealth() > me->GetMaxHealth()/3 && Rand() < (50 + 70 * opponent->IsMoving()))
             {
                 uint32 RUPTURE = GetSpell(RUPTURE_1);
                 //no damage range for rupture

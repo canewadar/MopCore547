@@ -261,7 +261,7 @@ enum BotPetTypes
 enum WarlockBotPets
 {
     //PET_IMP                     = ,
-    PET_VOIDWALKER              = 70247
+    //PET_VOIDWALKER              = 70247
     //PET_SUCCUBUS                =
 };
 
@@ -612,8 +612,8 @@ class bot_ai : public ScriptedAI
         inline float InitAttackRange(float origRange, bool ranged) const;
         uint16 Rand() const;
         static inline uint32 GetLostHP(Unit const* unit) { return unit->GetMaxHealth() - unit->GetHealth(); }
-        static inline uint8 GetHealthPCT(Unit const* hTarget) { if (!hTarget || hTarget->isDead()) return 100; return (hTarget->GetHealth()*100/hTarget->GetMaxHealth()); }
-        static inline uint8 GetManaPCT(Unit const* hTarget) { if (!hTarget || hTarget->isDead() || hTarget->GetMaxPower(POWER_MANA) <= 1) return 100; return (hTarget->GetPower(POWER_MANA)*100/(hTarget->GetMaxPower(POWER_MANA))); }
+        static inline uint8 GetHealthPCT(Unit const* hTarget) { if (!hTarget || hTarget->IsDead()) return 100; return (hTarget->GetHealth()*100/hTarget->GetMaxHealth()); }
+        static inline uint8 GetManaPCT(Unit const* hTarget) { if (!hTarget || hTarget->IsDead() || hTarget->GetMaxPower(POWER_MANA) <= 1) return 100; return (hTarget->GetPower(POWER_MANA)*100/(hTarget->GetMaxPower(POWER_MANA))); }
 
         typedef std::set<Unit*> AttackerSet;
 
@@ -872,7 +872,7 @@ class bot_pet_ai : public bot_ai
         bool IsPetAI() const { return true; }
         bool CanRespawn() { return false; }
         void CommonTimers(uint32 diff);
-        inline bool IAmDead() const { return (!master || !m_creatureOwner || me->isDead()); }
+        inline bool IAmDead() const { return (!master || !m_creatureOwner || me->IsDead()); }
         //void SetCreatureOwner(Creature* newowner) { m_creatureOwner = newowner; }
         void SetBotCommandState(CommandStates st, bool force = false, Position* newpos = NULL);
         //virtual bool HealTarget(Unit* /*target*/, uint8 /*pct*/, uint32 /*diff*/) { return false; }

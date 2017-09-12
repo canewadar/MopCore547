@@ -440,7 +440,7 @@ bool bot_ai::doCast(Unit* victim, uint32 spellId, bool triggered, ObjectGuid ori
         me->Relocate(victim);
     }
 
-    if (me->isMoving() && m_botSpellInfo->CalcCastTime() > 0)
+    if (me->IsMoving() && m_botSpellInfo->CalcCastTime() > 0)
         me->BotStopMovement();
 
     TriggerCastFlags flags = triggered ? TRIGGERED_FULL_MASK : TRIGGERED_NONE;
@@ -570,11 +570,11 @@ void bot_minion_ai::SetBotCommandState(CommandStates st, bool force, Position* n
     if (JumpingFlyingOrFalling())
         return;
 
-    if (st == COMMAND_FOLLOW && !IsChanneling() && ((!me->isMoving() && !IsCasting() && master->IsAlive()) || force))
+    if (st == COMMAND_FOLLOW && !IsChanneling() && ((!me->IsMoving() && !IsCasting() && master->IsAlive()) || force))
     {
         if (!me->IsInMap(master)) return;
         if (CCed(me, true)/* || master->HasUnitState(UNIT_STATE_FLEEING)*/) return;
-        if (me->isMoving() && Rand() > 20) return;
+        if (me->IsMoving() && Rand() > 20) return;
         if (!newpos)
             _calculatePos(pos);
         else
@@ -601,17 +601,17 @@ void bot_minion_ai::SetBotCommandState(CommandStates st, bool force, Position* n
 
 void bot_pet_ai::SetBotCommandState(CommandStates st, bool force, Position* /*newpos*/)
 {
-    if (me->isDead() || IAmDead())
+    if (me->IsDead() || IAmDead())
         return;
 
     if (JumpingFlyingOrFalling())
         return;
 
-    if (st == COMMAND_FOLLOW && ((!me->isMoving() && !IsCasting() && master->IsAlive()) || force))
+    if (st == COMMAND_FOLLOW && ((!me->IsMoving() && !IsCasting() && master->IsAlive()) || force))
     {
         if (!me->IsInMap(master)) return;
         if (CCed(me, true)) return;
-        if (me->isMoving() && Rand() > 20) return;
+        if (me->IsMoving() && Rand() > 20) return;
         Unit* followtarget = m_creatureOwner;
         if (CCed(m_creatureOwner))
             followtarget = master;
@@ -897,7 +897,7 @@ void bot_minion_ai::CureGroup(Player* pTarget, uint32 cureSpell, uint32 diff)
         for (GroupReference* itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
         {
             Player* tPlayer = itr->GetSource();
-            if (!tPlayer || (tPlayer->isDead() && !tPlayer->HaveBot())) continue;
+            if (!tPlayer || (tPlayer->IsDead() && !tPlayer->HaveBot())) continue;
             if (!Bots && tPlayer->HaveBot())
                 Bots = true;
             if (!tPlayer->IsInWorld() || tPlayer->IsBeingTeleported()) continue;
@@ -1300,7 +1300,7 @@ void bot_minion_ai::SetStats(bool force, bool shapeshift)
     uint8 mylevel = std::min<uint8>(master->getLevel(), 80);
     if (myclass == BOT_CLASS_DRUID && GetBotStance() != BOT_STANCE_NONE)
         myclass = GetBotStance();
-    if (myclass != DRUID_BEAR_FORM && myclass != DRUID_CAT_FORM && (master->isDead() || (!shouldUpdateStats && !force)))
+    if (myclass != DRUID_BEAR_FORM && myclass != DRUID_CAT_FORM && (master->IsDead() || (!shouldUpdateStats && !force)))
         return;
     /*TC_LOG_ERROR("entities.player", "*etStats(): Updating bot %s, class: %u, race: %u, level %u, master: %s",
         me->GetName().c_str(), myclass, myrace, mylevel, master->GetName().c_str());*/
@@ -2108,7 +2108,7 @@ void bot_minion_ai::CheckAuras(bool force)
     {
         if (!opponent && !IAmFree())
         {
-            if (master->isDead())
+            if (master->IsDead())
             {
                 //If ghost move to corpse, else move to dead player
                 if (master->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
@@ -2127,7 +2127,7 @@ void bot_minion_ai::CheckAuras(bool force)
             {
                 _calculatePos(pos);
                 uint8 followdist = master->GetBotFollowDist();
-                if (me->GetExactDist(&pos) > (followdist > 8 ? 4 + followdist/2*(!master->isMoving()) : 8))
+                if (me->GetExactDist(&pos) > (followdist > 8 ? 4 + followdist/2*(!master->IsMoving()) : 8))
                     Follow(true, &pos); //check if doing nothing
             }
         }
@@ -2210,7 +2210,7 @@ bool bot_ai::CanBotAttack(Unit const* target, int8 byspell) const
        //me->IsValidAttackTarget(target) &&
        ((me->CanSeeOrDetect(target) && target->InSamePhase(me)) || CanSeeEveryone()) &&
        //!target->HasStealthAura() && !target->HasInvisibilityAura() &&
-       (master->isDead() || target->GetTypeId() == TYPEID_PLAYER || target->IsPet() ||
+       (master->IsDead() || target->GetTypeId() == TYPEID_PLAYER || target->IsPet() ||
        (target->GetDistance(master) < foldist && me->GetDistance(master) < followdist)) &&//if master is killed pursue to the end
         target->isTargetableForAttack() &&
         !IsInBotParty(target) &&
@@ -2284,7 +2284,7 @@ Unit* bot_ai::_getTarget(bool byspell, bool ranged, bool &reset) const
                 u = bot->GetVictim();
                 if (u && CanBotAttack(u, byspell) &&
                     (bot->IsInCombat() || u->IsInCombat()) &&
-                    (master->isDead() || master->GetDistance(u) < foldist))
+                    (master->IsDead() || master->GetDistance(u) < foldist))
                 {
                     //TC_LOG_ERROR("entities.player", "bot %s hooked %s's victim %s", me->GetName().c_str(), bot->GetName().c_str(), u->GetName().c_str());
                     return u;
@@ -2294,7 +2294,7 @@ Unit* bot_ai::_getTarget(bool byspell, bool ranged, bool &reset) const
                 u = pet->GetVictim();
                 if (u && CanBotAttack(u, byspell) &&
                     (pet->IsInCombat() || u->IsInCombat()) &&
-                    (master->isDead() || master->GetDistance(u) < foldist))
+                    (master->IsDead() || master->GetDistance(u) < foldist))
                 {
                     //TC_LOG_ERROR("entities.player", "bot %s hooked %s's victim %s", me->GetName().c_str(), pet->GetName().c_str(), u->GetName().c_str());
                     return u;
@@ -2311,7 +2311,7 @@ Unit* bot_ai::_getTarget(bool byspell, bool ranged, bool &reset) const
                 u = pl->GetVictim();
                 if (u && pl != master && CanBotAttack(u, byspell) &&
                     (pl->IsInCombat() || u->IsInCombat()) &&
-                    (master->isDead() || master->GetDistance(u) < foldist))
+                    (master->IsDead() || master->GetDistance(u) < foldist))
                 {
                     //TC_LOG_ERROR("entities.player", "bot %s hooked %s's victim %s", me->GetName().c_str(), pl->GetName().c_str(), u->GetName().c_str());
                     return u;
@@ -2327,7 +2327,7 @@ Unit* bot_ai::_getTarget(bool byspell, bool ranged, bool &reset) const
                     u = bot->GetVictim();
                     if (u && CanBotAttack(u, byspell) &&
                         (bot->IsInCombat() || u->IsInCombat()) &&
-                        (master->isDead() || master->GetDistance(u) < foldist))
+                        (master->IsDead() || master->GetDistance(u) < foldist))
                     {
                         //TC_LOG_ERROR("entities.player", "bot %s hooked %s's victim %s", me->GetName().c_str(), bot->GetName().c_str(), u->GetName().c_str());
                         return u;
@@ -2339,7 +2339,7 @@ Unit* bot_ai::_getTarget(bool byspell, bool ranged, bool &reset) const
                     u = pet->GetVictim();
                     if (u && CanBotAttack(u, byspell) &&
                         (pet->IsInCombat() || u->IsInCombat()) &&
-                        (master->isDead() || master->GetDistance(u) < foldist))
+                        (master->IsDead() || master->GetDistance(u) < foldist))
                     {
                         //TC_LOG_ERROR("entities.player", "bot %s hooked %s's victim %s", me->GetName().c_str(), pet->GetName().c_str(), u->GetName().c_str());
                         return u;
@@ -2359,12 +2359,12 @@ Unit* bot_ai::_getTarget(bool byspell, bool ranged, bool &reset) const
         {
             bool attackCC = i;
 
-            CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+            CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
             Cell cell(p);
             cell.SetNoCreate();
 
             NearestHostileUnitCheck check(me, maxdist, byspell, this, attackCC);
-			TrinityCore::UnitLastSearcher <NearestHostileUnitCheck> searcher(master, t, check);
+			MoPCore::UnitLastSearcher <NearestHostileUnitCheck> searcher(master, t, check);
             me->VisitNearbyObject(maxdist, searcher);
         }
     }
@@ -2635,7 +2635,7 @@ void bot_minion_ai::_updateStandState() const
         me->GetStandState() == UNIT_STAND_STATE_SIT &&
         !(me->GetInterruptMask() & AURA_INTERRUPT_FLAG_NOT_SEATED))
         me->SetStandState(UNIT_STAND_STATE_STAND);
-    if (CanSit() && !me->IsInCombat() && !me->isMoving() &&
+    if (CanSit() && !me->IsInCombat() && !me->IsMoving() &&
         (master->GetStandState() == UNIT_STAND_STATE_SIT || (me->GetInterruptMask() & AURA_INTERRUPT_FLAG_NOT_SEATED) || Feasting()) &&
         me->GetStandState() == UNIT_STAND_STATE_STAND)
         me->SetStandState(UNIT_STAND_STATE_SIT);
@@ -2662,7 +2662,7 @@ void bot_minion_ai::_updateRations()
     }
 
     //drink
-    if (!feast_mana && me->GetMaxPower(POWER_MANA) > 1 && !me->IsMounted() && !me->isMoving() && CanDrink() &&
+    if (!feast_mana && me->GetMaxPower(POWER_MANA) > 1 && !me->IsMounted() && !me->IsMoving() && CanDrink() &&
         !me->IsInCombat() && !IsCasting() && GetManaPCT(me) < 80 && urand(0, 100) < 20 &&
         !me->HasAura(DRINK))
     {
@@ -2687,7 +2687,7 @@ void bot_minion_ai::_updateRations()
     }
 
     //eat
-    if (!feast_health && !me->IsMounted() && !me->isMoving() && CanEat() &&
+    if (!feast_health && !me->IsMounted() && !me->IsMoving() && CanEat() &&
         !me->IsInCombat() && !IsCasting() && GetHealthPCT(me) < 80 && urand(0, 100) < 20 &&
         !me->HasAura(EAT))
     {
@@ -2850,16 +2850,16 @@ bool bot_ai::InDuel(Unit const* target) const
 //Finds player or it's corpse for resurrection returned as WorldObject*
 WorldObject* bot_minion_ai::GetNearbyRezTarget(float dist) const
 {
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     WorldObject* target = NULL;
 
     NearbyRezTargetCheck check(me, dist, this);
-	TrinityCore::WorldObjectSearcher <NearbyRezTargetCheck> searcher(me, target, check);
+	MoPCore::WorldObjectSearcher <NearbyRezTargetCheck> searcher(me, target, check);
 
-    TypeContainerVisitor<TrinityCore::WorldObjectSearcher <NearbyRezTargetCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::WorldObjectSearcher <NearbyRezTargetCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, dist);
 
@@ -2869,17 +2869,17 @@ WorldObject* bot_minion_ai::GetNearbyRezTarget(float dist) const
 //Returns dispellable/stealable 'Any Hostile Unit Attacking BotParty'
 Unit* bot_minion_ai::FindHostileDispelTarget(float dist, bool stealable) const
 {
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     Unit* unit = NULL;
 
     HostileDispelTargetCheck check(me, dist, stealable, this);
-	TrinityCore::UnitLastSearcher <HostileDispelTargetCheck> searcher(me, unit, check);
+	MoPCore::UnitLastSearcher <HostileDispelTargetCheck> searcher(me, unit, check);
 
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <HostileDispelTargetCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <HostileDispelTargetCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <HostileDispelTargetCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <HostileDispelTargetCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, dist);
     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, dist);
@@ -2905,17 +2905,17 @@ Unit* bot_minion_ai::FindAffectedTarget(uint32 spellId, ObjectGuid caster, float
     if (master->GetMap()->Instanceable())
         dist = DEFAULT_VISIBILITY_INSTANCE;
 
-    CellCoord p(TrinityCore::ComputeCellCoord(master->GetPositionX(), master->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(master->GetPositionX(), master->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     Unit* unit = NULL;
 
     AffectedTargetCheck check(caster, dist, spellId, master, hostile);
-	TrinityCore::UnitLastSearcher <AffectedTargetCheck> searcher(master, unit, check);
+	MoPCore::UnitLastSearcher <AffectedTargetCheck> searcher(master, unit, check);
 
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <AffectedTargetCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <AffectedTargetCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <AffectedTargetCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <AffectedTargetCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *master->GetMap(), *master, dist);
     cell.Visit(p, grid_unit_searcher, *master->GetMap(), *master, dist);
@@ -2928,17 +2928,17 @@ Unit* bot_minion_ai::FindPolyTarget(float dist, Unit* currTarget) const
     if (!currTarget)
         return NULL;
 
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     Unit* unit = NULL;
 
     PolyUnitCheck check(me, dist, currTarget);
-	TrinityCore::UnitLastSearcher <PolyUnitCheck> searcher(me, unit, check);
+	MoPCore::UnitLastSearcher <PolyUnitCheck> searcher(me, unit, check);
 
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <PolyUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <PolyUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <PolyUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <PolyUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, dist);
     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, dist);
@@ -2948,17 +2948,17 @@ Unit* bot_minion_ai::FindPolyTarget(float dist, Unit* currTarget) const
 //Finds target for direct fear (warlock)
 Unit* bot_minion_ai::FindFearTarget(float dist) const
 {
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     Unit* unit = NULL;
 
     FearUnitCheck check(me, dist);
-	TrinityCore::UnitLastSearcher <FearUnitCheck> searcher(me, unit, check);
+	MoPCore::UnitLastSearcher <FearUnitCheck> searcher(me, unit, check);
 
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <FearUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <FearUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <FearUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <FearUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, dist);
     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, dist);
@@ -2968,17 +2968,17 @@ Unit* bot_minion_ai::FindFearTarget(float dist) const
 //Finds target for paladin's repentance
 Unit* bot_minion_ai::FindStunTarget(float dist) const
 {
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     Unit* unit = NULL;
 
     StunUnitCheck check(me, dist);
-	TrinityCore::UnitLastSearcher <StunUnitCheck> searcher(me, unit, check);
+	MoPCore::UnitLastSearcher <StunUnitCheck> searcher(me, unit, check);
 
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <StunUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <StunUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <StunUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <StunUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, dist);
     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, dist);
@@ -2988,17 +2988,17 @@ Unit* bot_minion_ai::FindStunTarget(float dist) const
 //Finds target for priest's shackles
 Unit* bot_minion_ai::FindUndeadCCTarget(float dist, uint32 spellId/* = 0*/) const
 {
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     Unit* unit = NULL;
 
     UndeadCCUnitCheck check(me, dist, spellId);
-	TrinityCore::UnitLastSearcher <UndeadCCUnitCheck> searcher(me, unit, check);
+	MoPCore::UnitLastSearcher <UndeadCCUnitCheck> searcher(me, unit, check);
 
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <UndeadCCUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <UndeadCCUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <UndeadCCUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <UndeadCCUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, dist);
     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, dist);
@@ -3008,17 +3008,17 @@ Unit* bot_minion_ai::FindUndeadCCTarget(float dist, uint32 spellId/* = 0*/) cons
 //Finds target for druid's Entangling Roots
 Unit* bot_minion_ai::FindRootTarget(float dist, uint32 spellId) const
 {
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     Unit* unit = NULL;
 
     RootUnitCheck check(me, me->GetVictim(), dist, spellId);
-	TrinityCore::UnitLastSearcher <RootUnitCheck> searcher(me, unit, check);
+	MoPCore::UnitLastSearcher <RootUnitCheck> searcher(me, unit, check);
 
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <RootUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <RootUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <RootUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <RootUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, dist);
     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, dist);
@@ -3028,17 +3028,17 @@ Unit* bot_minion_ai::FindRootTarget(float dist, uint32 spellId) const
 //Finds casting target (friend or enemy)
 Unit* bot_minion_ai::FindCastingTarget(float maxdist, float mindist, bool isFriend, uint32 spellId) const
 {
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     Unit* unit = NULL;
 
     CastingUnitCheck check(me, mindist, maxdist, isFriend, spellId);
-	TrinityCore::UnitLastSearcher <CastingUnitCheck> searcher(me, unit, check);
+	MoPCore::UnitLastSearcher <CastingUnitCheck> searcher(me, unit, check);
 
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <CastingUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <CastingUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <CastingUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <CastingUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, maxdist);
     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, maxdist);
@@ -3064,7 +3064,7 @@ Unit* bot_minion_ai::FindAOETarget(float dist, bool checkbots, bool targetfriend
             for(AttackerSet::iterator iter = m_attackers.begin(); iter != m_attackers.end(); ++iter)
             {
                 if (!(*iter) || !(*iter)->IsAlive()) continue;
-                if ((*iter)->isMoving()) continue;
+                if ((*iter)->IsMoving()) continue;
                 if ((*iter)->HasBreakableByDamageCrowdControlAura())
                     continue;
                 if (me->GetDistance(*iter) < dist)
@@ -3094,7 +3094,7 @@ Unit* bot_minion_ai::FindAOETarget(float dist, bool checkbots, bool targetfriend
                 for(AttackerSet::iterator iter = b_attackers.begin(); iter != b_attackers.end(); ++iter)
                 {
                     if (!(*iter) || !(*iter)->IsAlive()) continue;
-                    if ((*iter)->isMoving()) continue;
+                    if ((*iter)->IsMoving()) continue;
                     if ((*iter)->HasBreakableByDamageCrowdControlAura())
                         continue;
                     if (me->GetDistance(*iter) < dist)
@@ -3131,7 +3131,7 @@ Unit* bot_minion_ai::FindAOETarget(float dist, bool checkbots, bool targetfriend
             for (AttackerSet::iterator iter = m_attackers.begin(); iter != m_attackers.end(); ++iter)
             {
                 if (!(*iter) || !(*iter)->IsAlive()) continue;
-                if ((*iter)->isMoving()) continue;
+                if ((*iter)->IsMoving()) continue;
                 if (me->GetDistance(*iter) < dist)
                     ++mCount;
             }
@@ -3168,7 +3168,7 @@ Unit* bot_minion_ai::FindAOETarget(float dist, bool checkbots, bool targetfriend
                 for(AttackerSet::iterator iter = b_attackers.begin(); iter != b_attackers.end(); ++iter)
                 {
                     if (!(*iter) || !(*iter)->IsAlive()) continue;
-                    if ((*iter)->isMoving()) continue;
+                    if ((*iter)->IsMoving()) continue;
                     if (me->GetDistance(*iter) < dist)
                         ++mCount;
                 }
@@ -3197,17 +3197,17 @@ Unit* bot_minion_ai::FindSplashTarget(float dist, Unit* To, float splashdist) co
     if (me->GetDistance(To) > dist)
         return NULL;
 
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     Unit* unit = NULL;
 
     SecondEnemyCheck check(me, dist, splashdist, To, this);
-	TrinityCore::UnitLastSearcher <SecondEnemyCheck> searcher(me, unit, check);
+	MoPCore::UnitLastSearcher <SecondEnemyCheck> searcher(me, unit, check);
 
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <SecondEnemyCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <SecondEnemyCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <SecondEnemyCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <SecondEnemyCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, dist);
     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, dist);
@@ -3217,17 +3217,17 @@ Unit* bot_minion_ai::FindSplashTarget(float dist, Unit* To, float splashdist) co
 //Finds target for hunter's Tranquilizing Shot (has dispellable magic or enrage effect)
 Unit* bot_minion_ai::FindTranquilTarget(float mindist, float maxdist) const
 {
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     Unit* unit = NULL;
 
     TranquilTargetCheck check(me, mindist, maxdist, this);
-	TrinityCore::UnitLastSearcher <TranquilTargetCheck> searcher(me, unit, check);
+	MoPCore::UnitLastSearcher <TranquilTargetCheck> searcher(me, unit, check);
 
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <TranquilTargetCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitLastSearcher <TranquilTargetCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <TranquilTargetCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitLastSearcher <TranquilTargetCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, maxdist);
     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, maxdist);
@@ -3238,15 +3238,15 @@ Unit* bot_minion_ai::FindTranquilTarget(float mindist, float maxdist) const
 //used for finding targets for spells which need reasonable amount of targets (ex. Death Knight AOE spells)
 void bot_minion_ai::GetNearbyTargetsList(std::list<Unit*> &targets, float maxdist, float mindist, bool forCC) const
 {
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
     NearbyHostileUnitCheck check(me, maxdist, mindist, this, forCC);
-	TrinityCore::UnitListSearcher <NearbyHostileUnitCheck> searcher(me, targets, check);
+	MoPCore::UnitListSearcher <NearbyHostileUnitCheck> searcher(me, targets, check);
 
-    TypeContainerVisitor<TrinityCore::UnitListSearcher <NearbyHostileUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
-    TypeContainerVisitor<TrinityCore::UnitListSearcher <NearbyHostileUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitListSearcher <NearbyHostileUnitCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
+    TypeContainerVisitor<MoPCore::UnitListSearcher <NearbyHostileUnitCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, maxdist);
     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, maxdist);
@@ -3255,7 +3255,7 @@ void bot_minion_ai::GetNearbyTargetsList(std::list<Unit*> &targets, float maxdis
 //used for finding targets to heal/buff for uncontrolled bots
 void bot_minion_ai::GetNearbyFriendlyTargetsList(GuidList &targets, float maxdist) const
 {
-    CellCoord p(TrinityCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+    CellCoord p(MoPCore::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
     Cell cell(p);
     cell.SetNoCreate();
 
@@ -3834,7 +3834,7 @@ void bot_ai::OnSpellHit(Unit* caster, SpellInfo const* spell)
         }
         else if (caster->IsInCombat() || me->IsInCombat())
             this->OwnerAttackedBy(caster);
-        //if (_evadeMode == true && me->isMoving() && IAmFree())
+        //if (_evadeMode == true && me->IsMoving() && IAmFree())
     }
 }
 //Messed up
@@ -3941,7 +3941,7 @@ bool bot_minion_ai::OnGossipHello(Player* player, Creature* creature, uint32 /*o
         return true;
     }
 
-    if (creature->isMoving())
+    if (creature->IsMoving())
         creature->StopMoving();
 
     uint32 gossipTextId = (player->GetGUIDLow() == creature->GetBotAI()->GetBotOwnerGuid() || !creature->GetBotAI()->IAmFree()) ? GOSSIP_SERVE_MASTER : GOSSIP_NEED_SMTH;
@@ -5319,7 +5319,7 @@ float bot_ai::InitAttackRange(float origRange, bool ranged) const
     {
         if (ranged)
             origRange *= 1.25f;
-        if (master->isDead())
+        if (master->IsDead())
             origRange += sWorld->GetMaxVisibleDistanceOnContinents();
         else if (IAmFree())
         {
@@ -7133,7 +7133,7 @@ void bot_ai::BotSpeak(std::string const& text, uint8 msgtype, uint32 language, O
         if (Unit* snd = ObjectAccessor::FindConnectedPlayer(speaker))
         {
             float dist = std::max<float>(sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY), sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_YELL) * 0.5f);
-			JadeCore::MessageDistDeliverer notifier(snd, &data, dist, false);
+			MoPCore::MessageDistDeliverer notifier(snd, &data, dist, false);
             snd->VisitNearbyWorldObject(dist, notifier);
         }
     }
@@ -7161,7 +7161,7 @@ void bot_minion_ai::BotJump(Position* pos)
 
 bool bot_minion_ai::UpdateImpossibleChase(Unit* target)
 {
-    if (_chaseTimer || me->isMoving() || !IAmFree())
+    if (_chaseTimer || me->IsMoving() || !IAmFree())
         return false;
 
     if (/*me->isFalling() || */JumpingFlyingOrFalling())
@@ -7637,7 +7637,7 @@ void bot_minion_ai::EnterEvadeMode(bool /*force*/)
     {
         if (!_evadeMode)
             ++_evadeCount;
-        else if (me->isMoving() && Rand() > 30)
+        else if (me->IsMoving() && Rand() > 30)
             return;
 
         _evadeMode = true;
@@ -7684,7 +7684,7 @@ void bot_minion_ai::EnterEvadeMode(bool /*force*/)
         return;
     }
 
-    if (me->isMoving())
+    if (me->IsMoving())
         return;
 
     _evadeMode = false;

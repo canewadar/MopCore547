@@ -118,8 +118,8 @@ void MapManager::Initialize()
         //float pos_z = field[4].GetFloat();
         //float ori = field[5].GetFloat();
 
-        CellCoord c = Trinity::ComputeCellCoord(pos_x, pos_y);
-        GridCoord g = Trinity::ComputeGridCoord(pos_x, pos_y);
+        CellCoord c = MoPCore::ComputeCellCoord(pos_x, pos_y);
+        GridCoord g = MoPCore::ComputeGridCoord(pos_x, pos_y);
         ASSERT(c.IsCoordValid() && "Invalid Cell coord!");
         ASSERT(g.IsCoordValid() && "Invalid Grid coord!");
         Map* npcbotmap = sMapMgr->CreateBaseMap(mapId);

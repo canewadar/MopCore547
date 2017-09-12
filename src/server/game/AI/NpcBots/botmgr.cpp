@@ -179,7 +179,7 @@ void BotMgr::Update(uint32 diff)
 
         if (ai->GetReviveTimer() <= diff)
         {
-            if (bot->isDead() && _owner->IsAlive() && !_owner->IsInCombat() && !_owner->IsBeingTeleported() && !_owner->InArena() &&
+            if (bot->IsDead() && _owner->IsAlive() && !_owner->IsInCombat() && !_owner->IsBeingTeleported() && !_owner->InArena() &&
                 !_owner->IsInFlight() && !_owner->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH) &&
                 !_owner->HasInvisibilityAura() && !_owner->HasStealthAura())
             {

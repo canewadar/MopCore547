@@ -2204,7 +2204,7 @@ struct SpellRadiusEntry
     //float unkRadius;
     float     RadiusMax;
 	//npcbot
-	float RadiusMax() const { return std::max(radiusHostile, radiusFriend); }
+	//float RadiusMax() const { return std::max(radiusHostile, radiusFriend); }
 	//end npcbot
 };
 

@@ -503,7 +503,7 @@ class SecondEnemyCheck
                 return false;//We need to find SECONDARY target
             if (!u->IsInCombat())
                 return false;
-            if (u->isMoving() != mytar->isMoving())//only when both targets idle or both moving
+            if (u->IsMoving() != mytar->IsMoving())//only when both targets idle or both moving
                 return false;
             if (!me->IsWithinDistInMap(u, m_range + 1.f))//distance check
                 return false;
@@ -633,7 +633,7 @@ class NearbyFriendlyUnitCheck
                 return false;
             //if (!u->IsInCombat())
             //    return false;
-            if (u->IsTotem() || u->IsSummon())
+            if (u->IsTotem() || u->isSummon())
                 return false;
             if (!u->InSamePhase(me))
                 return false;
