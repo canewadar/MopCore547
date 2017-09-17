@@ -221,6 +221,53 @@ class npc_clattering_scorpid : public CreatureScript
         }
 };
 
+/*######
+## Quest 25205: The Wolf and The Kodo
+## spell_rumbling_hooves_73868
+######*/
+class spell_rumbling_hooves_73868 : public SpellScriptLoader
+{
+    public:
+        spell_rumbling_hooves_73868() : SpellScriptLoader("spell_rumbling_hooves_73868") { }
+
+        class IsEntry
+        {
+            public:
+                explicit IsEntry(uint32 entry) : _entry(entry) { }
+
+                bool operator()(WorldObject* obj) const
+                {
+                    if (Creature* target = obj->ToCreature())
+                        return target->GetEntry() == _entry;
+
+                    return true;
+                }
+
+            private:
+                uint32 _entry;
+        };
+
+        class spell_rumbling_hooves_73868_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_rumbling_hooves_73868_SpellScript);
+
+            void FilterTargets(std::list<WorldObject*>& targets)
+            {
+                targets.remove_if(IsEntry(GetCaster()->GetEntry()));
+            }
+
+            void Register()
+            {
+                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_rumbling_hooves_73868_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENTRY);
+            }
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_rumbling_hooves_73868_SpellScript();
+        }
+};
+
 enum VoodooSpells
 {
     SPELL_BREW        = 16712, // Special Brew
@@ -381,6 +428,7 @@ void AddSC_durotar()
 {
     new npc_lazy_peon();
     new npc_clattering_scorpid();
+    new spell_rumbling_hooves_73868();
     new spell_voodoo();
     new npc_bblade_cultist();
 }

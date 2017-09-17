@@ -5,7 +5,8 @@
  
 1) Client for this source can be fount here:
 
-https://mega.nz/#!cZc30S6T!6R9zAlXkKE2ekBf7ZdnN_pQBnOxK5pyG3LNPEXT-0mU
+x32: https://mega.nz/#!cZc30S6T!6R9zAlXkKE2ekBf7ZdnN_pQBnOxK5pyG3LNPEXT-0mU
+x64: https://github.com/MoPSource/MopCore547/files/1300178/Wow-64.zip
 
 2) If you alredy have the Mists of Pandaria 5.4.X, you can just put this client in the folder and start it
 

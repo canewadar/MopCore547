@@ -6,11 +6,8 @@ Mists of Pandaria SmartAI Scripts TODO:
 Pandaria Zones:
 
 -- Dread Wastes
--- Isle of Thunder
 -- Krasarang Wilds
 -- Kun-Lai Summit
--- The Jade Forest
--- Timeless Isle
 -- Townlong Steppes
 -- Vale of Eternal Blossoms
 -- Valley of the Four Winds
