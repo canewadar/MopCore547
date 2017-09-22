@@ -727,7 +727,7 @@ class spell_dk_remorseless_winter : public SpellScriptLoader
         {
             PrepareSpellScript(spell_dk_remorseless_winter_SpellScript);
 
-            void HandleOnHit() override
+            void HandleOnHit()
             {
                 if (Player* _player = GetCaster()->ToPlayer())
                     if (Unit* target = GetHitUnit())
