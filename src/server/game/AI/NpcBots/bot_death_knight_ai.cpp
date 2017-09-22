@@ -1364,7 +1364,7 @@ public:
 
         void InitPowers()
         {
-            if (master->getLevel() >= 70)
+            /*if (master->getLevel() >= 70)
                 RefreshAura(RUNIC_POWER_MASTERY,5);
             else if (master->getLevel() >= 58)
                 RefreshAura(RUNIC_POWER_MASTERY,4);
@@ -1375,7 +1375,7 @@ public:
             }
 
             if (runicpower)
-                me->SetPower(POWER_RUNIC_POWER, runicpower);
+                me->SetPower(POWER_RUNIC_POWER, runicpower);*/
         }
 
         void InitSpells()
@@ -1404,14 +1404,14 @@ public:
             InitSpellMap(ANTI_MAGIC_SHELL_1);
             InitSpellMap(ARMY_OF_THE_DEAD_1);
   /*Talent*/InitSpellMap(LICHBORNE_1, true);
-  /*Talent*/lvl >= 60 ? InitSpellMap(HUNGERING_COLD_1) : RemoveSpell(HUNGERING_COLD_1);
+  /*Talent*///lvl >= 60 ? InitSpellMap(HUNGERING_COLD_1) : RemoveSpell(HUNGERING_COLD_1);
 
             InitSpellMap(PATH_OF_FROST_1);
             InitSpellMap(HORN_OF_WINTER_1);
   /*Talent*/InitSpellMap(RUNE_TAP_1, true);
   /*Talent*/lvl >= 58 ? InitSpellMap(BONE_SHIELD_1) : RemoveSpell(BONE_SHIELD_1);
             InitSpellMap(EMPOWER_RUNE_WEAPON_1);
-  /*Talent*/InitSpellMap(MARK_OF_BLOOD_1, true);
+  /*Talent*///InitSpellMap(MARK_OF_BLOOD_1, true);
   /*Talent*/InitSpellMap(VAMPIRIC_BLOOD_1, true);
   /*Talent*/lvl >= 59 ? InitSpellMap(HYSTERIA_1) : RemoveSpell(HYSTERIA_1);
 
@@ -1432,37 +1432,37 @@ public:
             RefreshAura(GLYPH_OF_HEART_STRIKE, level >= 65 ? 1 : 0);
             RefreshAura(GLYPH_OF_RUNE_TAP, level >= 68 ? 2 : level >= 60 ? 1 : 0);
             RefreshAura(GLYPH_OF_HOWLING_BLAST, level >= 63 ? 1 : 0);
-            RefreshAura(BUTCHERY, level >= 57 ? 1 : 0);
+           // RefreshAura(BUTCHERY, level >= 57 ? 1 : 0);
             RefreshAura(SCENT_OF_BLOOD, level >= 58 ? 1 : 0);
-            RefreshAura(VENDETTA, level >= 59 ? 1 : 0);
-            RefreshAura(BLOODY_VENGEANCE3, level >= 65 ? 1 : 0);
-            RefreshAura(BLOODY_VENGEANCE2, level >= 60 && level < 65 ? 1 : 0);
-            RefreshAura(BLOODY_VENGEANCE1, level >= 57 && level < 60 ? 1 : 0);
-            RefreshAura(ABOMINATIONS_MIGHT, level >= 60 ? 1 : 0);
+            //RefreshAura(VENDETTA, level >= 59 ? 1 : 0);
+         //   RefreshAura(BLOODY_VENGEANCE3, level >= 65 ? 1 : 0);
+        //    RefreshAura(BLOODY_VENGEANCE2, level >= 60 && level < 65 ? 1 : 0);
+        //    RefreshAura(BLOODY_VENGEANCE1, level >= 57 && level < 60 ? 1 : 0);
+         //   RefreshAura(ABOMINATIONS_MIGHT, level >= 60 ? 1 : 0);
             RefreshAura(IMPROVED_BLOOD_PRESENCE, level >= 67 ? 1 : 0);
-            RefreshAura(BLOODWORMS, level >= 65 ? 2 : 0);
+        //    RefreshAura(BLOODWORMS, level >= 65 ? 2 : 0);
             //RefreshAura(IMPROVED_DEATH_STRIKE, level >= 66 ? 1 : 0);
-            RefreshAura(TOUGHNESS, level >= 57 ? 1 : 0);
-            RefreshAura(ANNIHILATION, level >= 57 ? 1 : 0);
+			//      RefreshAura(TOUGHNESS, level >= 57 ? 1 : 0);
+			//     RefreshAura(ANNIHILATION, level >= 57 ? 1 : 0);
             RefreshAura(ICY_TALONS, level >= 60 ? 1 : 0);
-            RefreshAura(CHILL_OF_THE_GRAVE, level >= 68 ? 2 : level >= 58 ? 1 : 0);
+			//   RefreshAura(CHILL_OF_THE_GRAVE, level >= 68 ? 2 : level >= 58 ? 1 : 0);
             RefreshAura(IMPROVED_ICY_TALONS, level >= 64 ? 1 : 0);
-            RefreshAura(CHILBLAINS, level >= 68 ? 1 : 0);
-            RefreshAura(ACCLIMATION, level >= 69 ? 1 : 0);
-            RefreshAura(NECROSIS5, level >= 63 ? 1 : 0);
-            RefreshAura(NECROSIS4, level >= 62 && level < 63 ? 1 : 0);
-            RefreshAura(NECROSIS3, level >= 61 && level < 62 ? 1 : 0);
-            RefreshAura(NECROSIS2, level >= 60 && level < 61 ? 1 : 0);
-            RefreshAura(NECROSIS1, level >= 59 && level < 60 ? 1 : 0);
-            RefreshAura(BLOOD_CAKED_BLADE3, level >= 65 ? 1 : 0);
-            RefreshAura(BLOOD_CAKED_BLADE2, level >= 62 && level < 65 ? 1 : 0);
-            RefreshAura(BLOOD_CAKED_BLADE1, level >= 60 && level < 62 ? 1 : 0);
-            RefreshAura(DIRGE, level >= 67 ? 2 : level >= 61 ? 1 : 0);
-            RefreshAura(UNHOLY_BLIGHT, level >= 61 ? 1 : 0);
-            RefreshAura(DESECRATION, level >= 62 ? 1 : 0);
-            RefreshAura(CRYPT_FEVER, level >= 64 ? 1 : 0);
-            RefreshAura(EBON_PLAGUEBRINGER, level >= 68 ? 1 : 0);
-            RefreshAura(WANDERING_PLAGUE, level >= 67 ? 1 : 0);
+			//    RefreshAura(CHILBLAINS, level >= 68 ? 1 : 0);
+			//    RefreshAura(ACCLIMATION, level >= 69 ? 1 : 0);
+			//    RefreshAura(NECROSIS5, level >= 63 ? 1 : 0);
+			//     RefreshAura(NECROSIS4, level >= 62 && level < 63 ? 1 : 0);
+			//    RefreshAura(NECROSIS3, level >= 61 && level < 62 ? 1 : 0);
+			//    RefreshAura(NECROSIS2, level >= 60 && level < 61 ? 1 : 0);
+			//    RefreshAura(NECROSIS1, level >= 59 && level < 60 ? 1 : 0);
+			//   RefreshAura(BLOOD_CAKED_BLADE3, level >= 65 ? 1 : 0);
+			//  RefreshAura(BLOOD_CAKED_BLADE2, level >= 62 && level < 65 ? 1 : 0);
+			//   RefreshAura(BLOOD_CAKED_BLADE1, level >= 60 && level < 62 ? 1 : 0);
+			//    RefreshAura(DIRGE, level >= 67 ? 2 : level >= 61 ? 1 : 0);
+			//    RefreshAura(UNHOLY_BLIGHT, level >= 61 ? 1 : 0);
+			//     RefreshAura(DESECRATION, level >= 62 ? 1 : 0);
+			//      RefreshAura(CRYPT_FEVER, level >= 64 ? 1 : 0);
+			//     RefreshAura(EBON_PLAGUEBRINGER, level >= 68 ? 1 : 0);
+           // RefreshAura(WANDERING_PLAGUE, level >= 67 ? 1 : 0);
 
             RefreshAura(FROST_FEVER);
             RefreshAura(BLOOD_PLAGUE);
@@ -1538,37 +1538,37 @@ public:
         enum DeathKnightPassives
         {
         //Talents
-            BUTCHERY                            = 49483,//rank 2
+         //   BUTCHERY                            = 49483,//rank 2
             SCENT_OF_BLOOD                      = 49509,//rank 3
-            VENDETTA                            = 55136,//rank 3
-            BLOODY_VENGEANCE1                   = 48988,
-            BLOODY_VENGEANCE2                   = 49503,
-            BLOODY_VENGEANCE3                   = 49504,
-            ABOMINATIONS_MIGHT                  = 53138,//rank 2
+       //     VENDETTA                            = 55136,//rank 3
+       //     BLOODY_VENGEANCE1                   = 48988,
+      //      BLOODY_VENGEANCE2                   = 49503,
+      //      BLOODY_VENGEANCE3                   = 49504,
+      //      ABOMINATIONS_MIGHT                  = 53138,//rank 2
             IMPROVED_BLOOD_PRESENCE             = 50371,//rank 2
-            BLOODWORMS                          = 49543,//rank 3
+       //     BLOODWORMS                          = 49543,//rank 3
             IMPROVED_DEATH_STRIKE               = 62908,//rank 2
-            TOUGHNESS                           = 49789,//rank 5
-            ANNIHILATION                        = 51473,//rank 3
+        //    TOUGHNESS                           = 49789,//rank 5
+        //    ANNIHILATION                        = 51473,//rank 3
             ICY_TALONS                          = 50887,//rank 5
-            CHILL_OF_THE_GRAVE                  = 50115,//rank 2
+        //    CHILL_OF_THE_GRAVE                  = 50115,//rank 2
             IMPROVED_ICY_TALONS                 = 55610,
-            CHILBLAINS                          = 50043,//rank 3
-            ACCLIMATION                         = 50152,//rank 3
-            NECROSIS1                           = 51459,
-            NECROSIS2                           = 51462,
-            NECROSIS3                           = 51463,
-            NECROSIS4                           = 51464,
-            NECROSIS5                           = 51465,
-            BLOOD_CAKED_BLADE1                  = 49219,
-            BLOOD_CAKED_BLADE2                  = 49627,
-            BLOOD_CAKED_BLADE3                  = 49628,
-            DIRGE                               = 51206,//rank 2
-            UNHOLY_BLIGHT                       = 49194,
-            DESECRATION                         = 55667,//rank 2
-            CRYPT_FEVER                         = 49632,//rank 3
-            EBON_PLAGUEBRINGER                  = 51161,//rank 3
-            WANDERING_PLAGUE                    = 49655,//rank 3
+        //    CHILBLAINS                          = 50043,//rank 3
+        //    ACCLIMATION                         = 50152,//rank 3
+        //    NECROSIS1                           = 51459,
+         //   NECROSIS2                           = 51462,
+        //    NECROSIS3                           = 51463,
+       //     NECROSIS4                           = 51464,
+      //      NECROSIS5                           = 51465,
+        //    BLOOD_CAKED_BLADE1                  = 49219,
+        //    BLOOD_CAKED_BLADE2                  = 49627,
+       //     BLOOD_CAKED_BLADE3                  = 49628,
+       //     DIRGE                               = 51206,//rank 2
+        //    UNHOLY_BLIGHT                       = 49194,
+         //   DESECRATION                         = 55667,//rank 2
+        //    CRYPT_FEVER                         = 49632,//rank 3
+        //    EBON_PLAGUEBRINGER                  = 51161,//rank 3
+        //    WANDERING_PLAGUE                    = 49655,//rank 3
         //Special
   /*Talent*/RUNIC_POWER_MASTERY                 = 50147,//rank 2
             FROST_FEVER                         = 59921,

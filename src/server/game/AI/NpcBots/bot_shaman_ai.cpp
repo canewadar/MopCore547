@@ -227,7 +227,7 @@ public:
                     {
                         if (Unit* u = me->GetVictim())
                         {
-                            if (HasRole(BOT_ROLE_DPS) && me->GetExactDist(u) < (u->isMoving() ? 10 : 25))
+                            if (HasRole(BOT_ROLE_DPS) && me->GetExactDist(u) < (u->IsMoving() ? 10 : 25))
                             {
                                 temptimer = GC_Timer;
                                 if (doCast(me, GetSpell(SEARING_TOTEM_1)))
@@ -241,7 +241,7 @@ public:
                     }
                 }
             }
-            if (!me->isMoving() && !master->isMoving())
+            if (!me->IsMoving() && !master->IsMoving())
             {
                 if (!_totems[T_WATER].first && !master->m_SummonSlot[T_WATER+1])
                 {
@@ -635,7 +635,7 @@ public:
                 return false;
 
             if (GetSpell(EARTH_SHIELD_1) && Earthy == false && (target == master || IsTank(target)) &&
-                (target->IsInCombat() || !target->isMoving()) &&
+                (target->IsInCombat() || !target->IsMoving()) &&
                 me->GetExactDist(target) < 40 && Rand() < 75)
             {
                 bool cast = !Shielded(target);
@@ -1001,10 +1001,10 @@ public:
                     return;
             }
 
-            float radius = 0.f;
-            if (SpellInfo const* info = sSpellMgr->GetSpellInfo(summon->m_spells[0]))
-                if (SpellRadiusEntry const* entry = info->Effects[0].RadiusEntry)
-                    radius = entry->RadiusMax();
+			float radius = 0.f;
+			if (SpellInfo const* info = sSpellMgr->GetSpellInfo(summon->m_spells[0]))
+				if (SpellRadiusEntry const* entry = info->Effects[0].RadiusEntry)
+					radius = entry->RadiusMax;
 
             _totems[slot].first = summon->GetGUID();
             _totems[slot].second.pos.Relocate(*summon);

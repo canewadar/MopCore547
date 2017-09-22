@@ -474,7 +474,7 @@ public:
             //Deterrence check
             if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED))
             {
-                if (!me->isMoving())
+                if (!me->IsMoving())
                     GetInPosition(true);
                 return;
             }
@@ -792,9 +792,9 @@ public:
             uint32 spellId = spell->Id;
 
             //Thrill of the Hunt additive (stage 1): store mana restore value while ability crits
-            if (me->getLevel() >= 40 && TotH[spellId] > 0 && uint32(TotH[spellId]) < uint32(me->GetMaxPower(POWER_MANA)))
+            if (me->getLevel() >= 40 && TotH[spellId] > 0 && uint32(TotH[spellId]) < uint32(me->GetMaxPower(POWER_FOCUS)))
             {
-                me->EnergizeBySpell(me, THRILL_OF_THE_HUNT_EFFECT, TotH[spellId], POWER_MANA);
+                me->EnergizeBySpell(me, THRILL_OF_THE_HUNT_EFFECT, TotH[spellId], POWER_FOCUS);
                 TotH[spellId] = 0;
             }
 
@@ -875,7 +875,7 @@ public:
         {
             Trap_cd = 0;
 			me->setPowerType(POWER_FOCUS);
-			me->SetPower(POWER_FOCUS, 100, true);
+			me->SetPower(POWER_FOCUS, 100);
 			DoCast(me, call_pet, true);
             ScorpidSting_Timer = 0;
             Aspect_Timer = 0;

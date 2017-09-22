@@ -55,7 +55,7 @@ public:
             if (me->GetShapeshiftForm() == FORM_NONE && swiftness && m_botSpellInfo->CalcCastTime() > 0)
             {
                 DoCast(victim, spellId, true);
-                me->RemoveAurasDueToSpell(NATURES_SWIFTNESS_1, me->GetGUID(), 0, AURA_REMOVE_BY_EXPIRE);
+            //    me->RemoveAurasDueToSpell(NATURES_SWIFTNESS_1, me->GetGUID(), 0, AURA_REMOVE_BY_EXPIRE);
                 me->RemoveAurasDueToSpell(CRIT_50, me->GetGUID(), 0, AURA_REMOVE_BY_EXPIRE);
                 swiftness = false;
                 return true;
@@ -274,9 +274,6 @@ public:
             if (IsSpellReady(RIP_1, diff) && energy > 30 && HasRole(BOT_ROLE_DPS) && Rand() < 30 &&
                 doCast(opponent, GetSpell(RIP_1)))
                 return;
-            if (IsSpellReady(CLAW_1, diff) && energy > 45 && HasRole(BOT_ROLE_DPS) && Rand() < 80 &&
-                doCast(opponent, GetSpell(CLAW_1)))
-                return;
         }//end doCatActions
 
         void doBalanceActions(uint32 diff)
@@ -308,14 +305,14 @@ public:
             {
                 if (GC_Timer <= diff &&
                     opponent->getAttackers().size() > 1 &&//check if faerie fire is not useless 50/50
-                    Rand() < 20 && !HasAuraName(opponent, FAERIE_FIRE_1))
+                    Rand() < 20 && opponent->HasAura(FAERIE_FIRE_1))
                 {
                     if (doCast(opponent, FAERIE_FIRE))
                         return;
                 }
             }
             if (IsSpellReady(MOONFIRE_1, diff) && HasRole(BOT_ROLE_DPS) && Rand() < 20 &&
-                !HasAuraName(opponent, MOONFIRE_1, me->GetGUID()))
+				opponent->HasAura(MOONFIRE_1, me->GetGUID()))
             {
                 if (doCast(opponent, GetSpell(MOONFIRE_1)))
                     return;
@@ -463,7 +460,7 @@ public:
                 CheckBattleRez(diff);
             BuffAndHealGroup(master, diff);
             //CureTarget(master, GetSpell(CURE_POISON_1), diff);
-            CureGroup(master, GetSpell(CURE_POISON_1), diff);
+          //  CureGroup(master, GetSpell(CURE_POISON_1), diff);
 
             if (!CheckAttackTarget(BOT_CLASS_DRUID))
                 return;
@@ -535,23 +532,10 @@ public:
             if (Rand() > 50 + 20*target->IsInCombat() + 50*master->GetMap()->IsRaid() - 50*me->GetShapeshiftForm()) return false;
             if (me->GetExactDist(target) > 40) return false;
 
-            if (IsSpellReady(NATURES_SWIFTNESS_1, diff, false) &&
-                (hp < 15 || (hp < 35 && target->getAttackers().size() > 2)) &&
-                (target->IsInCombat() || !target->getAttackers().empty()))
-            {
-                if (me->IsNonMeleeSpellCast(false))
-                    me->InterruptNonMeleeSpells(false);
-                if (doCast(me, GetSpell(NATURES_SWIFTNESS_1)) && RefreshAura(CRIT_50, 2))
-                {
-                    swiftness = true;
-                    if (doCast(target, GetSpell(HEALING_TOUCH_1), true))
-                        Heal_Timer = 3000;
-                    return true;
-                }
-            }
+
             if (IsSpellReady(SWIFTMEND_1, diff, false, 3000) &&
                 (hp < 25 || GetLostHP(target) > 5000) &&
-                (HasAuraName(target, REGROWTH_1) || HasAuraName(target, REJUVENATION_1)))
+                (target->HasAura(REGROWTH_1) || target->HasAura(REJUVENATION_1)))
             {
                 if (doCast(target, GetSpell(SWIFTMEND_1)))
                 {
@@ -594,9 +578,9 @@ public:
             bool tanking = IsTank(target) && boss;
             bool regrowth = IsSpellReady(REGROWTH_1, diff);
             if ( ( (hp < 80 || GetLostHP(target) > 3500 || tanking) &&
-                regrowth && !HasAuraName(target, REGROWTH_1, me->GetGUID()) )
+                regrowth && !target->HasAura(me->GetGUID()) )
                 ||
-                (HasAuraName(target, REGROWTH_1, me->GetGUID()) && HasAuraName(target, REJUVENATION_1, me->GetGUID()) &&
+                (target->HasAura(REGROWTH_1, me->GetGUID()) && target->HasAura(REJUVENATION_1, me->GetGUID()) &&
                 (hp < 70 || GetLostHP(target) > 3000) && regrowth))
             {
                 if (doCast(target, GetSpell(REGROWTH_1)))
@@ -604,7 +588,7 @@ public:
             }
             if (GetSpell(REJUVENATION_1) && GC_Timer <= diff && hp > 25 &&
                 (hp < 90 || GetLostHP(target) > 2000 || tanking) &&
-                !HasAuraName(target, REJUVENATION_1, me->GetGUID()))
+                !target->HasAura(REJUVENATION_1, me->GetGUID()))
             {
                 if (doCast(target, GetSpell(REJUVENATION_1)))
                 {
@@ -617,7 +601,7 @@ public:
             }
             if (IsSpellReady(LIFEBLOOM_1, diff) &&
                 ((hp < 85 && hp > 40) || (hp > 70 && tanking) ||
-                (hp < 70 && hp > 25 && HasAuraName(target, REGROWTH_1) && HasAuraName(target, REJUVENATION_1)) ||
+                (hp < 70 && hp > 25 && target->HasAura(REGROWTH_1) && target->HasAura(REJUVENATION_1)) ||
                 (GetLostHP(target) > 1500 && hp > 35)))
             {
                 Aura* bloom = target->GetAura(GetSpell(LIFEBLOOM_1), me->GetGUID()).get();
@@ -640,11 +624,11 @@ public:
             if (target && target->IsAlive() && me->GetExactDist(target) < 30)
             {
                 if (uint32 MARK_OF_THE_WILD = GetSpell(MARK_OF_THE_WILD_1))
-                    if (!HasAuraName(target, MARK_OF_THE_WILD_1))
+                    if (!target->HasAura(MARK_OF_THE_WILD_1))
                         if (doCast(target, MARK_OF_THE_WILD))
                             return true;
                 if (uint32 THORNS = GetSpell(THORNS_1))
-                    if (!HasAuraName(target, THORNS_1))
+                    if (!target->HasAura(THORNS_1))
                         if (doCast(target, THORNS))
                             return true;
             }
@@ -914,8 +898,7 @@ public:
                 pctbonus += 0.3f;
             //Savage Fury: 20% bonus damage for Claw, Rake, Mangle (Cat), Mangle (Bear) and Maul
             if (lvl >= 15 &&
-                (spellId == GetSpell(CLAW_1) ||
-                spellId == GetSpell(RAKE_1) ||
+                (spellId == GetSpell(RAKE_1) ||
                 spellId == GetSpell(MANGLE_CAT_1) ||
                 spellId == GetSpell(MANGLE_BEAR_1) ||
                 spellId == GetSpell(MAUL_1)))
@@ -1190,9 +1173,7 @@ public:
         void InitSpells()
         {
             uint8 lvl = me->getLevel();
-
             InitSpellMap(WARSTOMP_1, true);
-
             InitSpellMap(MARK_OF_THE_WILD_1);
             InitSpellMap(THORNS_1);
             InitSpellMap(HEALING_TOUCH_1);
@@ -1210,7 +1191,6 @@ public:
      /*tal*/lvl >= 50 ? InitSpellMap(MANGLE_BEAR_1) : RemoveSpell(MANGLE_BEAR_1);
             InitSpellMap(BASH_1);
             InitSpellMap(CAT_FORM_1);
-            InitSpellMap(CLAW_1);
             InitSpellMap(RAKE_1);
             InitSpellMap(SHRED_1);
             InitSpellMap(RIP_1);
@@ -1220,10 +1200,9 @@ public:
             InitSpellMap(WRATH_1);
             InitSpellMap(HURRICANE_1);
             InitSpellMap(FAERIE_FIRE_1);
-            InitSpellMap(CURE_POISON_1);
             InitSpellMap(INNERVATE_1);
             InitSpellMap(ENTANGLING_ROOTS_1);
-     /*tal*/lvl >= 30 ? InitSpellMap(NATURES_SWIFTNESS_1) : RemoveSpell(NATURES_SWIFTNESS_1);
+
 
  /*SPECIAL*/InitSpellMap(ECLIPSE_SOLAR_BUFF, true);
  /*SPECIAL*/InitSpellMap(ECLIPSE_LUNAR_BUFF, true);
@@ -1234,27 +1213,11 @@ public:
             uint8 level = master->getLevel();
 
             //RefreshAura(SPELLDMG2, level >= 78 ? 3 : level >= 65 ? 2 : level >= 50 ? 1 : 0);
-            RefreshAura(NATURAL_PERFECTION3, level >= 45 ? 1 : 0);
-            RefreshAura(NATURAL_PERFECTION2, level >= 43 && level < 45 ? 1 : 0);
-            RefreshAura(NATURAL_PERFECTION1, level >= 41 && level < 43 ? 1 : 0);
             RefreshAura(LIVING_SEED3, level >= 50 ? 1 : 0);
-            RefreshAura(LIVING_SEED2, level >= 48 && level < 50 ? 1 : 0);
-            RefreshAura(LIVING_SEED1, level >= 46 && level < 48 ? 1 : 0);
-            RefreshAura(REVITALIZE3, level >= 55 ? 3 : 0);
             RefreshAura(REVITALIZE2, level >= 53 && level < 55 ? 2 : 0);
-            RefreshAura(REVITALIZE1, level >= 51 && level < 53 ? 2 : 0);
-            RefreshAura(GIFT_OF_THE_EARTHMOTHER, level >= 55 ? 1 : 0);
+         //   RefreshAura(GIFT_OF_THE_EARTHMOTHER, level >= 55 ? 1 : 0);
             RefreshAura(OMEN_OF_CLARITY, level >= 70 ? 3 : level >= 40 ? 2 : level >= 20 ? 1 : 0);
-            RefreshAura(GLYPH_SWIFTMEND, level >= 45 ? 1 : 0);
             RefreshAura(GLYPH_INNERVATE, level >= 40 ? 1 : 0);
-            RefreshAura(NATURESGRACE, level >= 20 ? 1 : 0);
-            RefreshAura(ECLIPSE, level >= 50 ? 1 : 0);
-            RefreshAura(EARTH_AND_MOON, level >= 55 ? 1 : 0);
-            RefreshAura(SURVIVAL_OF_THE_FITTEST, level >= 55 ? 1 : 0);
-            RefreshAura(HEART_OF_THE_WILD, level >= 35 ? 1 : 0);
-            RefreshAura(NATURAL_REACTION, level >= 35 ? 1 : 0);
-            RefreshAura(INFECTED_WOUNDS, level >= 45 ? 1 : 0);
-            RefreshAura(FUROR, level >= 10 ? 1 : 0);
             RefreshAura(T9_RESTO_P4_BONUS, level >= 78 ? 1 : 0);
             RefreshAura(T8_RESTO_P4_BONUS, level >= 78 ? 1 : 0);
             RefreshAura(T9_BALANCE_P2_BONUS, level >= 78 ? 1 : 0);
@@ -1276,7 +1239,6 @@ public:
                 case WILD_GROWTH_1:
                 case SWIFTMEND_1:
                 case TRANQUILITY_1:
-                case CURE_POISON_1:
                 case INNERVATE_1:
                 case BEAR_FORM_1:
                 case CAT_FORM_1:
@@ -1298,7 +1260,7 @@ public:
         enum DruidBaseSpells
         {
             MARK_OF_THE_WILD_1                  = 1126,
-            THORNS_1                            = 467,
+            THORNS_1                            = 5176,
             HEALING_TOUCH_1                     = 5185,
             REGROWTH_1                          = 8936,
             REJUVENATION_1                      = 774,
@@ -1315,7 +1277,7 @@ public:
             BASH_1                              = 5211, //NYI
             MAUL_1                              = 6807, //NYI
             CAT_FORM_1                          = 768,
-            CLAW_1                              = 1082,
+          //  CLAW_1                              = 1082,
             RAKE_1                              = 1822,
             SHRED_1                             = 5221,
             RIP_1                               = 1079,
@@ -1326,36 +1288,36 @@ public:
             WRATH_1                             = 5176,
             HURRICANE_1                         = 16914,
             FAERIE_FIRE_1                       = 770,
-            CURE_POISON_1                       = 8946,
+          // CURE_POISON_1                       = 8946,
             INNERVATE_1                         = 29166,
             ENTANGLING_ROOTS_1                  = 339,
-     /*tal*/NATURES_SWIFTNESS_1                 = 17116,
+    // /*tal*/NATURES_SWIFTNESS_1                 = 17116,
             WARSTOMP_1                          = 20549
         };
         enum DruidPassives
         {
         //Talents
             OMEN_OF_CLARITY                     = 16864,//clearcast
-            NATURESGRACE                        = 61346,//haste 20% for 3 sec
-            NATURAL_PERFECTION1                 = 33881,
-            NATURAL_PERFECTION2                 = 33882,
-            NATURAL_PERFECTION3                 = 33883,
-            LIVING_SEED1                        = 48496,//rank 1
-            LIVING_SEED2                        = 48499,//rank 2
+        //    NATURESGRACE                        = 61346,//haste 20% for 3 sec
+          //  NATURAL_PERFECTION1                 = 33881,
+         //   NATURAL_PERFECTION2                 = 33882,
+          //  NATURAL_PERFECTION3                 = 33883,
+          //  LIVING_SEED1                        = 48496,//rank 1
+         //   LIVING_SEED2                        = 48499,//rank 2
             LIVING_SEED3                        = 48500,//rank 3
-            REVITALIZE1                         = 48539,//rank 1
+          //  REVITALIZE1                         = 48539,//rank 1
             REVITALIZE2                         = 48544,//rank 2
-            REVITALIZE3                         = 48545,//rank 3
-            GIFT_OF_THE_EARTHMOTHER             = 51183,//rank 5
-            ECLIPSE                             = 48525,//rank 3
-            EARTH_AND_MOON                      = 48511,//rank 3
-            SURVIVAL_OF_THE_FITTEST             = 33856,//rank 3
-            HEART_OF_THE_WILD                   = 24894,//rank 5
-            FUROR                               = 17061,//rank 5
-            NATURAL_REACTION                    = 57881,//rank 3
-            INFECTED_WOUNDS                     = 48485,//rank 3
+          //  REVITALIZE3                         = 48545,//rank 3
+         //   GIFT_OF_THE_EARTHMOTHER             = 51183,//rank 5
+        //    ECLIPSE                             = 48525,//rank 3
+        //    EARTH_AND_MOON                      = 48511,//rank 3
+       //     SURVIVAL_OF_THE_FITTEST             = 33856,//rank 3
+      //      HEART_OF_THE_WILD                   = 24894,//rank 5
+      //      FUROR                               = 17061,//rank 5
+      //      NATURAL_REACTION                    = 57881,//rank 3
+      //      INFECTED_WOUNDS                     = 48485,//rank 3
         //Glyphs
-            GLYPH_SWIFTMEND                     = 54824,//no consumption
+        //    GLYPH_SWIFTMEND                     = 54824,//no consumption
             GLYPH_INNERVATE                     = 54832,//self regen
         //other
             T9_RESTO_P4_BONUS                   = 67128,//rejuve crits
