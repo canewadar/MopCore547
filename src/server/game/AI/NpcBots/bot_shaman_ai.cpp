@@ -227,7 +227,7 @@ public:
                     {
                         if (Unit* u = me->GetVictim())
                         {
-                            if (HasRole(BOT_ROLE_DPS) && me->GetExactDist(u) < (u->IsMoving() ? 10 : 25))
+                            if (HasRole(BOT_ROLE_DPS) && me->GetExactDist(u) < (u->isMoving() ? 10 : 25))
                             {
                                 temptimer = GC_Timer;
                                 if (doCast(me, GetSpell(SEARING_TOTEM_1)))
@@ -241,7 +241,7 @@ public:
                     }
                 }
             }
-            if (!me->IsMoving() && !master->IsMoving())
+            if (!me->isMoving() && !master->isMoving())
             {
                 if (!_totems[T_WATER].first && !master->m_SummonSlot[T_WATER+1])
                 {
@@ -594,7 +594,8 @@ public:
 
             RezGroup(GetSpell(ANCESTRAL_SPIRIT_1), master);
 
-            if (Feasting()) return;
+            if (Feasting())
+				return;
 
             if (Shielded(me) && Rand() < 25)
             {
@@ -634,7 +635,7 @@ public:
                 return false;
 
             if (GetSpell(EARTH_SHIELD_1) && Earthy == false && (target == master || IsTank(target)) &&
-                (target->IsInCombat() || !target->IsMoving()) &&
+                (target->IsInCombat() || !target->isMoving()) &&
                 me->GetExactDist(target) < 40 && Rand() < 75)
             {
                 bool cast = !Shielded(target);
@@ -1003,7 +1004,7 @@ public:
             float radius = 0.f;
             if (SpellInfo const* info = sSpellMgr->GetSpellInfo(summon->m_spells[0]))
                 if (SpellRadiusEntry const* entry = info->Effects[0].RadiusEntry)
-                    radius = entry->RadiusMax;
+                    radius = entry->RadiusMax();
 
             _totems[slot].first = summon->GetGUID();
             _totems[slot].second.pos.Relocate(*summon);
@@ -1188,7 +1189,7 @@ public:
        //     InitSpellMap(LESSER_HEALING_WAVE_1);
   /*Talent*/lvl >= 60 ? InitSpellMap(RIPTIDE_1) : RemoveSpell(RIPTIDE_1);
             InitSpellMap(ANCESTRAL_SPIRIT_1);
-            CURE_TOXINS = lvl >= 39 ? InitSpell(me, CLEANSE_SPIRIT_1) : InitSpell(me, CURE_TOXINS_1);
+            CURE_TOXINS = lvl >= 22 ? InitSpell(me, NATURES_CURE_1) : InitSpell(me, NATURES_CURE_1);
             InitSpellMap(CURE_TOXINS);
             InitSpellMap(FLAME_SHOCK_1);
             InitSpellMap(EARTH_SHOCK_1);
@@ -1258,7 +1259,7 @@ public:
                 case CHAIN_HEAL_1:
                 case HEALING_SURGE_1:
                 case RIPTIDE_1:
-                case CURE_TOXINS_1:
+                case NATURES_CURE_1:
                 case CLEANSE_SPIRIT_1:
                 case BLOODLUST_1:
                 case WATER_SHIELD_1:
@@ -1285,7 +1286,7 @@ public:
             HEALING_SURGE_1                     = 8004,
             RIPTIDE_1                           = 61295,
             ANCESTRAL_SPIRIT_1                  = 2008,
-            CURE_TOXINS_1                       = 526,
+            NATURES_CURE_1                      = 88423,
             CLEANSE_SPIRIT_1                    = 51886,
             FLAME_SHOCK_1                       = 8050,
             EARTH_SHOCK_1                       = 8042,

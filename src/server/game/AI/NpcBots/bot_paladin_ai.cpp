@@ -85,11 +85,11 @@ public:
 
         bool HOFTarget(Unit* target, uint32 diff)
         {
-            if (!target || target->IsDead()) return false;
+            if (!target || target->isDead()) return false;
             if (!IsSpellReady(HOF_1, diff)) return false;
             if (target->ToCreature() && Rand() > 25) return false;
             if (me->GetExactDist(target) > 30) return false;//too far away
-            if (HasAuraName(target, HOF_1)) return false;     //Alredy has HOF
+            if (target->HasAura(HOF_1)) return false;     //Alredy has HOF
 
             Unit::AuraMap const &auras = target->GetOwnedAuras();
             for (Unit::AuraMap::const_iterator i = auras.begin(); i != auras.end(); ++i)
@@ -137,16 +137,16 @@ public:
                     if (!HOSPlayer) continue;
                     if (HOSPlayer->HaveBot())
                         bots = true;
-                    if (HOSPlayer->IsDead()) continue;
+                    if (HOSPlayer->isDead()) continue;
                     if (IsTank(HOSPlayer)) continue; //tanks do not need it
                     if (!HOSPlayer->IsInWorld() || master->GetMap() != HOSPlayer->FindMap() || me->GetExactDist(HOSPlayer) > 30) continue;
-                    if (HasAuraName(HOSPlayer, HOS_1)) continue;
+                    if (HOSPlayer->HasAura(HOS_1)) continue;
                     AttackerSet h_attackers = HOSPlayer->getAttackers();
                     if (h_attackers.empty()) continue;
                     for (AttackerSet::iterator iter = h_attackers.begin(); iter != h_attackers.end(); ++iter)
                     {
                         if (!(*iter)) continue;
-                        if ((*iter)->IsDead()) continue;
+                        if ((*iter)->isDead()) continue;
                         if (!(*iter)->CanHaveThreatList()) continue;
                         threat = (*iter)->getThreatManager().getThreat(HOSPlayer);
                         if (threat < 25.f) continue;//too small threat
@@ -168,16 +168,16 @@ public:
                     for (BotMap::const_iterator it = map->begin(); it != map->end(); ++it)
                     {
                         Creature* cre = it->second;
-                        if (!cre || cre->IsDead()) continue;
+                        if (!cre || cre->isDead()) continue;
                         if (IsTank(cre)) continue;
                         if (me->GetExactDist(cre) > 30) continue;
-                        if (HasAuraName(cre, HOS_1)) continue; //Alredy has HOS
+                        if (cre->HasAura(HOS_1)) continue; //Alredy has HOS
                         AttackerSet h_attackers = cre->getAttackers();
                         if (h_attackers.empty()) continue;
                         for (AttackerSet::iterator iter = h_attackers.begin(); iter != h_attackers.end(); ++iter)
                         {
                             if (!(*iter)) continue;
-                            if ((*iter)->IsDead()) continue;
+                            if ((*iter)->isDead()) continue;
                             if (!(*iter)->CanHaveThreatList()) continue;
                             threat = (*iter)->getThreatManager().getThreat(cre);
                             if (threat < 25.f) continue;//too small threat
@@ -193,12 +193,12 @@ public:
 
         bool HOSTarget(Unit* target, uint32 diff)
         {
-            if (!target || target->IsDead()) return false;
+            if (!target || target->isDead()) return false;
             if (!IsSpellReady(HOS_1, diff) || Rand() > 50) return false;
             if (IsTank(target)) return false; //tanks do not need it
             if (IsCasting()) return false; //I'm busy casting
             if (me->GetExactDist(target) > 30) return false; //too far away
-            if (HasAuraName(target, HOS_1)) return false; //Alredy has HOS
+            if (target->HasAura(HOS_1)) return false; //Alredy has HOS
 
             AttackerSet h_attackers = target->getAttackers();
             if (h_attackers.empty()) return false; //no aggro
@@ -207,7 +207,7 @@ public:
             for (AttackerSet::iterator iter = h_attackers.begin(); iter != h_attackers.end(); ++iter)
             {
                 if (!(*iter)) continue;
-                if ((*iter)->IsDead()) continue;
+                if ((*iter)->isDead()) continue;
                 if (!(*iter)->CanHaveThreatList()) continue;
                 threat = (*iter)->getThreatManager().getThreat(target);
                 if (threat < 25.f) continue; //too small threat
@@ -227,7 +227,7 @@ public:
         //Holy_Shock setup (Modify HERE)
         bool HS(Unit* target, uint32 diff)
         {
-            if (!target || target->IsDead()) return false;
+            if (!target || target->isDead()) return false;
             if (!IsSpellReady(HOLY_SHOCK_1, diff)) return false;
             if (IsCasting()) return false;
             if (target->GetTypeId() == TYPEID_PLAYER && (target->IsCharmed() || target->isPossessed()))
@@ -246,7 +246,7 @@ public:
         bool HealTarget(Unit* target, uint8 hp, uint32 diff)
         {
             if (!HasRole(BOT_ROLE_HEAL)) return false;
-            if (!target || target->IsDead()) return false;
+            if (!target || target->isDead()) return false;
             if (hp > 97) return false;
             //sLog->outBasic("HealTarget() by %s on %s", me->GetName().c_str(), target->GetName().c_str());
             if (Rand() > 40 + 20*target->IsInCombat() + 50*master->GetMap()->IsRaid()) return false;
@@ -256,22 +256,22 @@ public:
                 IsInBotParty(target) &&
                 ((hp < 30 && !target->getAttackers().empty()) || (hp < 50 && target->getAttackers().size() > 3)) &&
                 me->GetExactDist(target) < 30 &&
-                !HasAuraName(target, HAND_OF_PROTECTION_1) &&
-                !HasAuraName(target, FORBEARANCE_AURA))
+                !target->HasAura(HAND_OF_PROTECTION_1) &&
+                !target->HasAura(FORBEARANCE_AURA))
             {
                 if (doCast(target, GetSpell(HAND_OF_PROTECTION_1)))
                 {
                     BotWhisper("BOP on you!", target->ToPlayer());
 
                     //debug
-                    if (!HasAuraName(target, FORBEARANCE_AURA))
+                    if (target->HasAura (FORBEARANCE_AURA))
                         me->AddAura(FORBEARANCE_AURA, target);
-                    if (HasAuraName(target, FORBEARANCE_AURA) && !HasAuraName(target, HAND_OF_PROTECTION_1))
+                    if (target->HasAura(FORBEARANCE_AURA) && !target->HasAura(HAND_OF_PROTECTION_1))
                         me->AddAura(GetSpell(HAND_OF_PROTECTION_1), target);
                 }
                 return true;
             }
-            else if (hp < 20 && !HasAuraName(target, HAND_OF_PROTECTION_1))
+            else if (hp < 20 && !target->HasAura (HAND_OF_PROTECTION_1))
             {
                 // 20% to cast loh, else just do a Shock
                 switch (rand()%3)
@@ -280,7 +280,7 @@ public:
                         if (IsSpellReady(LAY_ON_HANDS_1, diff, false) && hp < 20 &&
                             target->GetTypeId() == TYPEID_PLAYER &&
                             (target->IsInCombat() || !target->getAttackers().empty()) &&
-                            !HasAuraName(target, FORBEARANCE_AURA))
+                            !target->HasAura(FORBEARANCE_AURA))
                         {
                             if (doCast(target, GetSpell(LAY_ON_HANDS_1)))
                             {
@@ -302,7 +302,7 @@ public:
             Unit* u = target->GetVictim();
             if (IsSpellReady(SACRED_SHIELD_1, diff) && !IAmFree() && target->GetTypeId() == TYPEID_PLAYER &&
                 (hp < 65 || target->getAttackers().size() > 1 || (u && u->GetMaxHealth() > target->GetMaxHealth()*10 && target->IsInCombat())) &&
-                !HasAuraName(target, SACRED_SHIELD_1) && IsInBotParty(target))
+                !target->HasAura(SACRED_SHIELD_1) && IsInBotParty(target))
             {
                 Unit* aff = FindAffectedTarget(GetSpell(SACRED_SHIELD_1), me->GetGUID(), 50, 1);//use players since we cast only on them
                 if ((!aff || (aff->getAttackers().empty() && !IsTank(aff))) &&
@@ -387,7 +387,7 @@ public:
             if (!me->IsInCombat())
                 DoNonCombatActions(diff);
             //buff
-            if (IsSpellReady(SEAL_OF_COMMAND_1, diff, false) && Rand() < 20 && !HasAuraName(me, SEAL_OF_COMMAND_1) &&
+            if (IsSpellReady(SEAL_OF_COMMAND_1, diff, false) && Rand() < 20 && !me->HasAura(SEAL_OF_COMMAND_1) &&
                 doCast(me, GetSpell(SEAL_OF_COMMAND_1)))
                 GC_Timer = 500;
 
@@ -456,7 +456,7 @@ public:
 
         bool BuffTarget(Unit* target, uint32 diff)
         {
-            if (!target || target->IsDead() || GC_Timer > diff || Rand() > 30) return false;
+            if (!target || target->isDead() || GC_Timer > diff || Rand() > 30) return false;
             if (me->IsInCombat() && !master->GetMap()->IsRaid()) return false;
             if (me->GetExactDist(target) > 30) return false;
             //if (HasAuraName(target, BLESSING_OF_WISDOM_1, me->GetGUID()) ||
@@ -679,7 +679,7 @@ public:
             }
 
             if (IsSpellReady(CONSECRATION_1, diff) && HasRole(BOT_ROLE_DPS) && me->GetDistance(opponent) < 7 &&
-                !opponent->IsMoving() && Rand() < 50)
+                !opponent->isMoving() && Rand() < 50)
             {
                 if (doCast(me, GetSpell(CONSECRATION_1)))
                     return;
@@ -930,7 +930,7 @@ public:
             InitSpellMap(FLASH_OF_LIGHT_1);
             InitSpellMap(HOLY_LIGHT_1);
             InitSpellMap(LAY_ON_HANDS_1);
-            InitSpellMap(SACRED_SHIELD_1);
+            //InitSpellMap(SACRED_SHIELD_1);
   /*Talent*/lvl >= 40 ? InitSpellMap(HOLY_SHOCK_1) : RemoveSpell(HOLY_SHOCK_1);
             InitSpellMap(CLEANSE_1);
             InitSpellMap(REDEMPTION_1);
@@ -939,7 +939,7 @@ public:
             InitSpellMap(TURN_EVIL_1);
             InitSpellMap(HOLY_WRATH_1);
             InitSpellMap(EXORCISM_1);
-  /*Talent*/lvl >= 25 ? InitSpellMap(SEAL_OF_COMMAND_1) : RemoveSpell(SEAL_OF_COMMAND_1);
+  /*Talent*///lvl >= 25 ? InitSpellMap(SEAL_OF_COMMAND_1) : RemoveSpell(SEAL_OF_COMMAND_1);
   /*Talent*/lvl >= 20 ? InitSpellMap(CRUSADER_STRIKE_1) : RemoveSpell(CRUSADER_STRIKE_1);
             InitSpellMap(JUDGEMENT_1);
             InitSpellMap(CONSECRATION_1);
@@ -947,11 +947,11 @@ public:
             InitSpellMap(HOW_1);
             InitSpellMap(AVENGING_WRATH_1);
             InitSpellMap(BLESSING_OF_MIGHT_1);
-            InitSpellMap(BLESSING_OF_WISDOM_1);
+            //InitSpellMap(BLESSING_OF_WISDOM_1);
             InitSpellMap(BLESSING_OF_KINGS_1);
-  /*Talent*/lvl >= 30 ? InitSpellMap(BLESSING_OF_SANCTUARY_1) : RemoveSpell(BLESSING_OF_SANCTUARY_1);
-            InitSpellMap(DEVOTION_AURA_1);
-            InitSpellMap(CONCENTRATION_AURA_1);
+  /*Talent*///lvl >= 30 ? InitSpellMap(BLESSING_OF_SANCTUARY_1) : RemoveSpell(BLESSING_OF_SANCTUARY_1);
+            //InitSpellMap(DEVOTION_AURA_1);
+            //InitSpellMap(CONCENTRATION_AURA_1);
             InitSpellMap(DIVINE_PLEA_1);
             InitSpellMap(HAND_OF_PROTECTION_1);
             InitSpellMap(HOF_1);
@@ -967,32 +967,32 @@ public:
 
             //RefreshAura(SPELLDMG, /*level >= 78 ? 5 : level >= 75 ? 4 */level >= 55 ? 3 : level >= 35 ? 2 : level >= 15 ? 1 : 0);
             //RefreshAura(SPELLDMG2, level >= 55 ? 3 : level >= 35 ? 2 : level >= 15 ? 1 : 0);
-            RefreshAura(PURE1, level >= 55 ? 1 : 0);
-            RefreshAura(WISE, level >= 35 ? 1 : 0);
-            RefreshAura(RECKONING5, level >= 50 ? 1 : 0);
-            RefreshAura(RECKONING4, level >= 45 && level < 50 ? 1 : 0);
-            RefreshAura(RECKONING3, level >= 40 && level < 45 ? 1 : 0);
-            RefreshAura(RECKONING2, level >= 35 && level < 40 ? 1 : 0);
-            RefreshAura(RECKONING1, level >= 30 && level < 35 ? 1 : 0);
-            RefreshAura(VENGEANCE3, level >= 30 ? 1 : 0);
-            RefreshAura(VENGEANCE2, level >= 27 && level < 30 ? 1 : 0);
-            RefreshAura(VENGEANCE1, level >= 25 && level < 27 ? 1 : 0);
+            //RefreshAura(PURE1, level >= 55 ? 1 : 0);
+            //RefreshAura(WISE, level >= 35 ? 1 : 0);
+            //RefreshAura(RECKONING5, level >= 50 ? 1 : 0);
+            //RefreshAura(RECKONING4, level >= 45 && level < 50 ? 1 : 0);
+            //RefreshAura(RECKONING3, level >= 40 && level < 45 ? 1 : 0);
+            //RefreshAura(RECKONING2, level >= 35 && level < 40 ? 1 : 0);
+            //RefreshAura(RECKONING1, level >= 30 && level < 35 ? 1 : 0);
+            //RefreshAura(VENGEANCE3, level >= 30 ? 1 : 0);
+            //RefreshAura(VENGEANCE2, level >= 27 && level < 30 ? 1 : 0);
+            //RefreshAura(VENGEANCE1, level >= 25 && level < 27 ? 1 : 0);
             RefreshAura(SHOFL3, level >= 60 ? 1 : 0);
-            RefreshAura(SHOFL2, level >= 55 && level < 60 ? 1 : 0);
-            RefreshAura(SHOFL1, level >= 50 && level < 55 ? 1 : 0);
-            RefreshAura(SACRED_CLEANSING, level >= 45 ? 1 : 0);
-            RefreshAura(DIVINE_PURPOSE, level >= 35 ? 1 : 0);
-            RefreshAura(VINDICATION2, level >= 25 ? 1 : 0);
-            RefreshAura(VINDICATION1, level >= 20 && level < 25 ? 1 : 0);
-            RefreshAura(LAYHANDS, level >= 30 ? 1 : 0);
-            RefreshAura(FANATICISM, level >= 20 ? 2 : 0);
-            RefreshAura(ARDENT_DEFENDER, level >= 40 ? 1 : 0);
-            RefreshAura(ILLUMINATION, level >= 20 ? 1 : 0);
-            RefreshAura(INFUSION_OF_LIGHT, level >= 55 ? 1 : 0); //NYI
-            RefreshAura(REDOUBT3, level >= 68 ? 2 : level >= 55 ? 1 : 0);
-            RefreshAura(REDOUBT2, level >= 50 && level < 55 ? 1 : 0);
-            RefreshAura(REDOUBT1, level >= 45 && level < 50 ? 1 : 0);
-            RefreshAura(GLYPH_HOLY_LIGHT, level >= 15 ? 1 : 0);
+            //RefreshAura(SHOFL2, level >= 55 && level < 60 ? 1 : 0);
+            //RefreshAura(SHOFL1, level >= 50 && level < 55 ? 1 : 0);
+            //RefreshAura(SACRED_CLEANSING, level >= 45 ? 1 : 0);
+            //RefreshAura(DIVINE_PURPOSE, level >= 35 ? 1 : 0);
+            RefreshAura(VINDICATION2, level >= 25 ? 1 : 0); // Assertion Failed. Access player-field of Object, but have only creature-fields
+            //RefreshAura(VINDICATION1, level >= 20 && level < 25 ? 1 : 0);
+            //RefreshAura(LAYHANDS, level >= 30 ? 1 : 0);
+            //RefreshAura(FANATICISM, level >= 20 ? 2 : 0);
+            //RefreshAura(ARDENT_DEFENDER, level >= 40 ? 1 : 0);
+            //RefreshAura(ILLUMINATION, level >= 20 ? 1 : 0);
+            RefreshAura(INFUSION_OF_LIGHT, level >= 55 ? 1 : 0); //NYI  // Assertion Failed. Access player-field of Object, but have only creature-fields
+            //RefreshAura(REDOUBT3, level >= 68 ? 2 : level >= 55 ? 1 : 0);
+            //RefreshAura(REDOUBT2, level >= 50 && level < 55 ? 1 : 0);
+            //RefreshAura(REDOUBT1, level >= 45 && level < 50 ? 1 : 0);
+            RefreshAura(GLYPH_HOLY_LIGHT, level >= 15 ? 1 : 0); // Assertion Failed. Access player-field of Object, but have only creature-fields
         }
 
         bool CanUseManually(uint32 basespell) const

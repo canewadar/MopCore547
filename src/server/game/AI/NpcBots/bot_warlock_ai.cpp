@@ -137,7 +137,7 @@ public:
             if (feartimer <= diff && GC_Timer <= diff)
             { CheckFear(); feartimer = 2000; }
 
-            if (IsSpellReady(RAIN_OF_FIRE_1, diff) && !me->IsMoving() && HasRole(BOT_ROLE_DPS) && Rand() < 25)
+            if (IsSpellReady(RAIN_OF_FIRE_1, diff) && !me->isMoving() && HasRole(BOT_ROLE_DPS) && Rand() < 25)
             {
                 Unit* blizztarget = FindAOETarget(30, true);
                 if (blizztarget && doCast(blizztarget, GetSpell(RAIN_OF_FIRE_1)))
@@ -189,7 +189,7 @@ public:
 
         uint8 Afflicted(Unit* target)
         {
-            if (!target || target->IsDead()) return 0;
+            if (!target || target->isDead()) return 0;
             bool aff = HasAuraName(target, UNSTABLE_AFFLICTION_1, me->GetGUID());
             bool imm = HasAuraName(target, IMMOLATE_1, me->GetGUID());
             if (imm) return 1;
@@ -316,6 +316,7 @@ public:
         void Reset()
         {
             feartimer = 0;
+			me->CastSpell(me, summon_voidwalker, true);
 
             DefaultInit();
         }
@@ -357,8 +358,9 @@ public:
             RAIN_OF_FIRE_1                      = 5740,
             HAUNT_1                             = 59164,
             CORRUPTION_1                        = 172,
-            UNSTABLE_AFFLICTION_1               = 30404,
-            FEAR_1                              = 6215
+            UNSTABLE_AFFLICTION_1               = 30108,
+            FEAR_1                              = 5782,
+			summon_voidwalker                   = 12746,
         };
         enum WarlockPassives
         {

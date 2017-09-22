@@ -125,15 +125,8 @@ public:
             if (GC_Timer > diff || me->IsMounted() || Feasting())
                 return;
 
-            if (uint32 DAMPENMAGIC = GetSpell(DAMPENMAGIC_1))
-            {
-                if (!HasAuraName(me, DAMPENMAGIC) &&
-                    doCast(me, DAMPENMAGIC))
-                    return;
-            }
-
-            if (ICEARMOR && !HasAuraName(me, ICEARMOR) &&
-                doCast(me, ICEARMOR))
+            if (ICEARMOR && !me->HasAura(ICEARMOR))
+				doCast(me, ICEARMOR);
                 return;
         }
 
@@ -145,7 +138,7 @@ public:
 
             if (uint32 ARCANEINTELLECT = GetSpell(ARCANEINTELLECT_1))
             {
-                if (target->getPowerType() == POWER_MANA && !HasAuraName(target, ARCANEINTELLECT) &&
+                if (target->getPowerType() == POWER_MANA && !target->HasAura(ARCANEINTELLECT) &&
                     doCast(target, ARCANEINTELLECT))
                     return true;
             }
@@ -215,25 +208,18 @@ public:
             Unit* u = me->SelectNearestTarget(20);
             //ICE_BARRIER
             uint32 ICE_BARRIER = GetSpell(ICE_BARRIER_1);
-            if (IsSpellReady(ICE_BARRIER_1, diff, false) && u && u->GetVictim() == me && u->GetDistance(me) < 8 &&
-                !me->HasAura(ICE_BARRIER))
+            if (IsSpellReady(ICE_BARRIER_1, diff, false) && !(me->HasAura(ICE_BARRIER_1)))
             {
                 if (me->IsNonMeleeSpellCast(true))
+				{ 
                     me->InterruptNonMeleeSpells(true);
-                if (doCast(me, ICE_BARRIER))
+				   doCast(me, ICE_BARRIER);
+				   GC_Timer = 800;
+				   return;
+				}
+				else
                 {
-                    GC_Timer = 800;
-                    return;
-                }
-            }
-            if (!IsSpellReady(ICE_BARRIER_1, diff, false) &&
-                IsSpellReady(BLINK_1, diff, false, 3000) && u && u->GetVictim() == me &&
-                u->GetDistance(me) < 6 && !me->HasAura(ICE_BARRIER))
-            {
-                if (me->IsNonMeleeSpellCast(true))
-                    me->InterruptNonMeleeSpells(true);
-                if (doCast(me, GetSpell(BLINK_1)))
-                {
+					doCast(me, ICE_BARRIER);
                     GC_Timer = 800;
                     return;
                 }
@@ -506,7 +492,7 @@ public:
                     for (GroupReference* itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
                     {
                         Player* pPlayer = itr->GetSource();
-                        if (!pPlayer || !pPlayer->IsInWorld() || pPlayer->IsDead()) continue;
+                        if (!pPlayer || !pPlayer->IsInWorld() || pPlayer->isDead()) continue;
                         if (me->GetMapId() != pPlayer->GetMapId()) continue;
                         if (pPlayer->getPowerType() == POWER_MANA && me->GetExactDist(pPlayer) < 30 &&
                             !pPlayer->HasAura(FOCUSMAGIC))
@@ -526,7 +512,7 @@ public:
                             for (BotMap::const_iterator it = map->begin(); it != map->end(); ++it)
                             {
                                 Creature* cre = it->second;
-                                if (!cre || !cre->IsInWorld() || cre == me || cre->IsDead()) continue;
+                                if (!cre || !cre->IsInWorld() || cre == me || cre->isDead()) continue;
                                 if (cre->getPowerType() == POWER_MANA && me->GetExactDist(cre) < 30 &&
                                     !cre->HasAura(FOCUSMAGIC))
                                 {
@@ -735,7 +721,6 @@ public:
         void InitSpells()
         {
             uint8 lvl = me->getLevel();
-            InitSpellMap(DAMPENMAGIC_1);
             InitSpellMap(ARCANEINTELLECT_1);
             InitSpellMap(ARCANEMISSILES_1);
             InitSpellMap(POLYMORPH_1);
@@ -757,7 +742,6 @@ public:
             InitSpellMap(FROSTNOVA_1);
             InitSpellMap(CONEOFCOLD_1);
             InitSpellMap(BLIZZARD_1);
- /*Special*/ICEARMOR = lvl >= 20 ? InitSpell(me, ICEARMOR_1) : InitSpell(me, FROSTARMOR_1);
             InitSpellMap(ICEARMOR);
   /*Talent*/lvl >= 40 ? InitSpellMap(ICE_BARRIER_1) : RemoveSpell(ICE_BARRIER_1);
             InitSpellMap(ICEBLOCK_1);
@@ -768,33 +752,8 @@ public:
         {
             uint8 level = master->getLevel();
 
-            RefreshAura(ARCTIC_WINDS, level >= 35 ? 2 : level >= 10 ? 1 : 0);
-            RefreshAura(WINTERS_CHILL3, level >= 30 ? 1 : 0);
-            RefreshAura(WINTERS_CHILL2, level >= 25 && level < 30 ? 1 : 0);
-            RefreshAura(WINTERS_CHILL1, level >= 20 && level < 25 ? 1 : 0);
-            RefreshAura(IMPROVED_BLIZZARD, level >= 45 ? 1 : 0);
-            RefreshAura(FROSTBITE3, level >= 80 ? level >= 60 ? 3 : level >= 30 ? 2 : level >= 10 ? 1 : 0 : 0);
-            RefreshAura(FROSTBITE2, level >= 50 && level < 80 ? level >= 60 ? 3 : level >= 30 ? 2 : level >= 10 ? 1 : 0 : 0);
-            RefreshAura(FROSTBITE1, level >= 10 && level < 50 ? level >= 60 ? 3 : level >= 30 ? 2 : level >= 10 ? 1 : 0 : 0);
-            RefreshAura(SHATTERED_BARRIER, level >= 45 ? 1 : 0);
-            RefreshAura(ARCANE_INSTABILITY, level >= 65 ? 4 : level >= 55 ? 3 : level >= 45 ? 2 : level >= 35 ? 1 : 0);
-            RefreshAura(INCANTERS_ABSORPTION3, level >= 50 ? 1 : 0);
-            RefreshAura(INCANTERS_ABSORPTION2, level >= 45 && level < 50 ? 1 : 0);
-            RefreshAura(INCANTERS_ABSORPTION1, level >= 40 && level < 45 ? 1 : 0);
-            RefreshAura(SHATTER3, level >= 35 ? 1 : 0);
             RefreshAura(SHATTER2, level >= 30 && level < 35 ? 1 : 0);
-            RefreshAura(SHATTER1, level >= 25 && level < 30 ? 1 : 0);
-            RefreshAura(CLEARCAST, level >= 75 ? 3 : level >= 40 ? 2 : level >= 15 ? 1 : 0);
-            RefreshAura(FINGERS_OF_FROST, level >= 45 ? 1 : 0); //15%
-            RefreshAura(ARCANE_POTENCY2, level >= 40 ? 1 : 0);
-            RefreshAura(ARCANE_POTENCY1, level >= 35 && level < 40 ? 1 : 0);
-            RefreshAura(IGNITE, level >= 15 ? 1 : 0);
-            RefreshAura(IMPACT, level >= 60 ? 2 : level >= 20 ? 1 : 0);
             RefreshAura(IMPROVED_COUNTERSPELL2, level >= 35 ? 1 : 0);
-            RefreshAura(IMPROVED_COUNTERSPELL1, level >= 25 && level < 35 ? 1 : 0);
-            RefreshAura(FIRESTARTER2, level >= 55 ? 1 : 0);
-            RefreshAura(FIRESTARTER1, level >= 45 && level < 55 ? 1 : 0);
-            RefreshAura(GLYPH_LIVING_BOMB, GetSpell(LIVINGBOMB_1) ? 1 : 0);
             RefreshAura(GLYPH_POLYMORPH, GetSpell(POLYMORPH_1) ? 1 : 0);
         }
 
@@ -802,12 +761,10 @@ public:
         {
             switch (basespell)
             {
-                case DAMPENMAGIC_1:
                 case ARCANEINTELLECT_1:
                 case EVOCATION_1:
                 case REMOVE_CURSE_1:
                 case FOCUSMAGIC_1:
-                case FROSTARMOR_1:
                 case ICEARMOR_1:
                     return true;
                 default:
@@ -827,7 +784,7 @@ public:
 
         enum MageBaseSpells
         {
-            DAMPENMAGIC_1                       = 604, /* No SpellInfo */
+          //  DAMPENMAGIC_1                       = 604, /* No SpellInfo */
             ARCANEINTELLECT_1                   = 1459,
             ARCANEMISSILES_1                    = 5143,
             POLYMORPH_1                         = 118,
@@ -849,7 +806,7 @@ public:
             FROSTNOVA_1                         = 122,
             CONEOFCOLD_1                        = 120,
             BLIZZARD_1                          = 10,
-            FROSTARMOR_1                        = 168,
+          //  FROSTARMOR_1                        = 168,
             ICEARMOR_1                          = 7302,
             ICE_BARRIER_1                       = 11426,
             ICEBLOCK_1                          = 45438,
@@ -859,33 +816,33 @@ public:
         enum MagePassives
         {
         //Talents
-            SHATTERED_BARRIER                   = 54787,//rank 2
-            ARCTIC_WINDS                        = 31678,//rank 5
-            WINTERS_CHILL1                      = 11180,
-            WINTERS_CHILL2                      = 28592,
-            WINTERS_CHILL3                      = 28593,
-            FROSTBITE1                          = 11071,
-            FROSTBITE2                          = 12496,
-            FROSTBITE3                          = 12497,
-            IMPROVED_BLIZZARD                   = 12488,//rank 3
-            CLEARCAST /*Arcane Concentration*/  = 12577,//rank 5
-            ARCANE_POTENCY1                     = 31571,
-            ARCANE_POTENCY2                     = 31572,
-            SHATTER1                            = 11170,
+         //   SHATTERED_BARRIER                   = 54787,//rank 2
+       //     ARCTIC_WINDS                        = 31678,//rank 5
+       //     WINTERS_CHILL1                      = 11180,
+      //      WINTERS_CHILL2                      = 28592,
+     //       WINTERS_CHILL3                      = 28593,
+      //      FROSTBITE1                          = 11071,
+      //      FROSTBITE2                          = 12496,
+     //       FROSTBITE3                          = 12497,
+      //      IMPROVED_BLIZZARD                   = 12488,//rank 3
+       //     CLEARCAST /*Arcane Concentration*/  = 12577,//rank 5
+          //  ARCANE_POTENCY1                     = 31571,
+         //   ARCANE_POTENCY2                     = 31572,
+         //   SHATTER1                            = 11170,
             SHATTER2                            = 12982,
-            SHATTER3                            = 12983,
-            INCANTERS_ABSORPTION1               = 44394,
-            INCANTERS_ABSORPTION2               = 44395,
-            INCANTERS_ABSORPTION3               = 44396,
-            FINGERS_OF_FROST                    = 44545,//rank 2
-            ARCANE_INSTABILITY                  = 15060,//rank 3
-            IMPROVED_COUNTERSPELL1              = 11255,
+        //    SHATTER3                            = 12983,
+        //    INCANTERS_ABSORPTION1               = 44394,
+        //    INCANTERS_ABSORPTION2               = 44395,
+        //    INCANTERS_ABSORPTION3               = 44396,
+       //     FINGERS_OF_FROST                    = 44545,//rank 2
+      //      ARCANE_INSTABILITY                  = 15060,//rank 3
+        //    IMPROVED_COUNTERSPELL1              = 11255,
             IMPROVED_COUNTERSPELL2              = 12598,
-            IGNITE                              = 12848,
-            FIRESTARTER1                        = 44442,
-            FIRESTARTER2                        = 44443,
-            IMPACT                              = 12358,
-            GLYPH_LIVING_BOMB                   = 63091,
+       //     IGNITE                              = 12848,
+       //     FIRESTARTER1                        = 44442,
+       //     FIRESTARTER2                        = 44443,
+        //    IMPACT                              = 12358,
+       //     GLYPH_LIVING_BOMB                   = 63091,
         //Special
             GLYPH_POLYMORPH                     = 56375
         };

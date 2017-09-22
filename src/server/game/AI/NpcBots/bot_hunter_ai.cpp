@@ -78,7 +78,7 @@ public:
 
             Unit* target = NULL;
 
-            if (IsSpellReady(SCATTER_SHOT_1, diff, false, 10000) && HasRole(BOT_ROLE_DPS) && Rand() < 40)
+            /*if (IsSpellReady(SCATTER_SHOT_1, diff, false, 10000) && HasRole(BOT_ROLE_DPS) && Rand() < 40)
             {
                 target = FindCastingTarget(15, 0, false, GetSpell(SCATTER_SHOT_1));
                 temptimer = GC_Timer;
@@ -87,7 +87,7 @@ public:
                     GC_Timer = temptimer;
                     return;
                 }
-            }
+            }*/
             if (!target && IsSpellReady(WYVERN_STING_1, diff, true, 10000) && HasRole(BOT_ROLE_DPS) && Rand() < 70)
             {
                 target = FindCastingTarget(35, 5, false, GetSpell(WYVERN_STING_1));
@@ -126,7 +126,7 @@ public:
             }
         }
 
-        void CheckScatter(uint32 diff)
+       /* void CheckScatter(uint32 diff)
         {
             if (!IsSpellReady(SCATTER_SHOT_1, diff, false) || !HasRole(BOT_ROLE_DPS) || IsCasting() || Rand() > 50)
                 return;
@@ -142,7 +142,7 @@ public:
             }
 
             SetSpellCooldown(SCATTER_SHOT_1, 1000); //fail
-        }
+        }*/
 
         void CheckWyvernSting(uint32 diff)
         {
@@ -230,20 +230,18 @@ public:
             if (Aspect_Timer > diff || GC_Timer > diff || IsCasting() || Feasting() || Rand() > 35)
                 return;
 
-            uint32 ASPECT_OF_THE_VIPER = GetSpell(ASPECT_OF_THE_VIPER_1);
+//            uint32 ASPECT_OF_THE_VIPER = GetSpell(ASPECT_OF_THE_VIPER_1);
             uint32 ASPECT_OF_THE_PACK = GetSpell(ASPECT_OF_THE_PACK_1);
-            if (!ASPECT_OF_THE_VIPER && !ASPECT_OF_THE_PACK)
+            if (!ASPECT_OF_THE_PACK)
                 return;
 
             uint32 needaspect = 0;
             uint8 pct = GetManaPCT(me);
 
-            if (ASPECT_OF_THE_VIPER && pct < 25)
-                needaspect = ASPECT_OF_THE_VIPER;
-            else if (ASPECT_OF_THE_PACK && (pct > 70 || !Aspect))
+             if (ASPECT_OF_THE_PACK && (pct > 70 || !Aspect))
                 needaspect = ASPECT_OF_THE_PACK;
 
-            if (!needaspect || (needaspect == Aspect && HasAuraName(me, needaspect)))
+            if (!needaspect || (needaspect == Aspect && me->HasAura(needaspect)))
             {
                 Aspect_Timer = 2000;
                 return;
@@ -351,7 +349,7 @@ public:
             }
 
             float dist = me->GetExactDist(target);
-            if (dist < 5 || dist > 35)
+            if (dist > 35)
                 return;
 
             temptimer = GC_Timer;
@@ -476,7 +474,7 @@ public:
             //Deterrence check
             if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED))
             {
-                if (!me->IsMoving())
+                if (!me->isMoving())
                     GetInPosition(true);
                 return;
             }
@@ -518,7 +516,7 @@ public:
 
             CheckAutoShot();
             CheckScare(diff);
-            CheckScatter(diff);
+         //   CheckScatter(diff);
 
             //AttackerSet m_attackers = master->getAttackers();
             //AttackerSet b_attackers = me->getAttackers();
@@ -526,7 +524,7 @@ public:
             float meleedist = me->GetDistance(opponent);
 
             //special
-            if (IsSpellReady(SCATTER_SHOT_1, diff, false) && HasRole(BOT_ROLE_DPS) && meleedist < 15 && Rand() < 60)
+          /*  if (IsSpellReady(SCATTER_SHOT_1, diff, false) && HasRole(BOT_ROLE_DPS) && meleedist < 15 && Rand() < 60)
             {
                 temptimer = GC_Timer;
                 if (doCast(opponent, GetSpell(SCATTER_SHOT_1)))
@@ -536,7 +534,7 @@ public:
                     me->AttackStop();
                     return;
                 }
-            }
+            }*/
 
             //MELEE SECTION
             if (!(meleedist > 5))
@@ -545,7 +543,7 @@ public:
                 CheckTraps(diff);
 
                 //RAPTOR STRIKE
-                if (IsSpellReady(RAPTOR_STRIKE_1, diff, false) && HasRole(BOT_ROLE_DPS) && Rand() < 50)
+                /*if (IsSpellReady(RAPTOR_STRIKE_1, diff, false) && HasRole(BOT_ROLE_DPS) && Rand() < 50)
                 {
                     temptimer = GC_Timer;
                     if (doCast(opponent, GetSpell(RAPTOR_STRIKE_1), true))
@@ -555,15 +553,15 @@ public:
                     }
                 }
                 //WING CLIP
-                if (IsSpellReady(WING_CLIP_1, diff) && (!IsTank() || opponent->IsMoving()) &&
-                    Rand() < 80 && !opponent->HasAuraWithMechanic(/*(1<<MECHANIC_SNARE)|*/(1<<MECHANIC_ROOT)))
+                if (IsSpellReady(WING_CLIP_1, diff) && (!IsTank() || opponent->isMoving()) &&
+                    Rand() < 80 && !opponent->HasAuraWithMechanic((1<<MECHANIC_SNARE)|(1<<MECHANIC_ROOT)))
                 {
                     if (doCast(opponent, GetSpell(WING_CLIP_1)))
                     {
                         GC_Timer = 1000;
                         return;
                     }
-                }
+                }*/
                 //DISENGAGE
                 if (IsSpellReady(DISENGAGE_1, diff, false) && me->IsInCombat() && !IsTank() &&
                     !me->getAttackers().empty() && me->HasInArc(M_PI, *me->getAttackers().begin()) && Rand() < 30)
@@ -580,7 +578,7 @@ public:
 
             //HUNTERS MARK
             if (IsSpellReady(HUNTERS_MARK_1, diff, false) && Rand() < 25 &&
-                !HasAuraName(opponent, HUNTERS_MARK_1)) //100 yd range so don't check it
+                !opponent->HasAura(HUNTERS_MARK_1)) //100 yd range so don't check it
             {
                 //Hunter's Mark has exclusive GCD
                 temptimer = GC_Timer;
@@ -637,8 +635,7 @@ public:
             }
             //BLACK ARROW //custom cd condition
             //Black Arrow shares cooldown with traps, but we'll have it only partially
-            if (IsSpellReady(BLACK_ARROW_1, diff) && Trap_cd <= 10000 && HasRole(BOT_ROLE_DPS) &&
-                opponent->GetHealth() > me->GetMaxHealth()/3 && Rand() < 75)
+            if (IsSpellReady(BLACK_ARROW_1, diff) && Trap_cd <= 10000 && HasRole(BOT_ROLE_DPS) && Rand() < 75)
             {
                 if (doCast(opponent, GetSpell(BLACK_ARROW_1)))
                 {
@@ -647,8 +644,7 @@ public:
                 }
             }
             //RAPID FIRE
-            if (IsSpellReady(RAPID_FIRE_1, diff, false) && HasRole(BOT_ROLE_DPS) &&
-                opponent->GetHealth() > me->GetMaxHealth() / 2 && Rand() < 25)
+            if (IsSpellReady(RAPID_FIRE_1, diff, false) && HasRole(BOT_ROLE_DPS) && Rand() < 25)
             {
                 temptimer = GC_Timer;
                 if (doCast(me, GetSpell(RAPID_FIRE_1)))
@@ -661,25 +657,6 @@ public:
                     return;
 
                 SetSpellCooldown(EXPLOSIVE_SHOT_1, 500); //fail
-            }
-            //SCORPID STING //custom cd condition
-            if (uint32 SCORPID_STING = GetSpell(SCORPID_STING_1))
-            {
-                if (GC_Timer <= diff && (ScorpidSting_Timer <= diff || stingTargetGuid != opponent->GetGUID()))
-                {
-                    Aura* sSting = opponent->GetAura(SCORPID_STING).get();
-                    if (sSting && sSting->GetDuration() > 3000)
-                    {
-                        stingTargetGuid = opponent->GetGUID();
-                        SetSpellCooldown(SCORPID_STING_1, 2000);
-                    }
-                    else if (Rand() < 40 && doCast(opponent, SCORPID_STING))
-                    {
-                        stingTargetGuid = opponent->GetGUID();
-                        GC_Timer = 800;
-                        return;
-                    }
-                }
             }
             //CHIMERA SHOT TODO:
             if (IsSpellReady(CHIMERA_SHOT_1, diff) && HasRole(BOT_ROLE_DPS) && stingTargetGuid == opponent->GetGUID() &&
@@ -703,16 +680,7 @@ public:
                 SetSpellCooldown(MULTISHOT_1, 1000); //fail
             }
             //VOLLEY
-            if (IsSpellReady(VOLLEY_1, diff) && HasRole(BOT_ROLE_DPS) && !me->IsMoving() && Rand() < 25)
-            {
-                if (Unit* target = FindAOETarget(35, true, false))
-                {
-                    if (doCast(target, GetSpell(VOLLEY_1)))
-                        return;
-                }
 
-                SetSpellCooldown(VOLLEY_1, 1000); //fail
-            }
             //AIMED SHOT
             if (IsSpellReady(AIMED_SHOT_1, diff) && HasRole(BOT_ROLE_DPS) && Rand() < 80)
             {
@@ -756,7 +724,7 @@ public:
                     aftercrit += 6.f;
 
                 //Savage Strikes: 20% additional critical chance for Raptor Strike, Mongoose Bite and Counterattack
-                if (lvl >= 10 && (spellId == GetSpell(RAPTOR_STRIKE_1)/* || spellId == GetSpell(MONGOOSE_BITE_1) || spellId == GetSpell(COUNTERATTACK_1)*/))
+               // if (lvl >= 10 && (spellId == GetSpell(RAPTOR_STRIKE_1)/* || spellId == GetSpell(MONGOOSE_BITE_1) || spellId == GetSpell(COUNTERATTACK_1)*/))
 
                 //second roll (may be illogical)
                 if (aftercrit > 0.f)
@@ -788,13 +756,13 @@ public:
             if (lvl >= 20 && spellId == GetSpell(ARCANE_SHOT_1))
                 pctbonus += 0.15f;
             //Rapid Killing (buff): 20% bonus damage for Aimed Shot, Arcane Shot or Chimera Shot (removed in SpellHitTarget())
-            if (lvl >= 20 && (spellId == GetSpell(AIMED_SHOT_1) || spellId == GetSpell(ARCANE_SHOT_1) || spellId == GetSpell(CHIMERA_SHOT_1)) &&
+          /*  if (lvl >= 20 && (spellId == GetSpell(AIMED_SHOT_1) || spellId == GetSpell(ARCANE_SHOT_1) || spellId == GetSpell(CHIMERA_SHOT_1)) &&
                 me->HasAura(RAPID_KILLING_BUFF))
                 pctbonus += 0.2f;
             //Barrage: 12% bonus damage for Aimed Shot, Multi-Shot or Volley (removed in SpellHitTarget())
             if (lvl >= 30 && (spellId == GetSpell(AIMED_SHOT_1) || spellId == GetSpell(MULTISHOT_1) ||
                 spellInfo->IsRankOf(sSpellMgr->GetSpellInfo(VOLLEY_DAMAGE_1))))
-                pctbonus += 0.12f;
+                pctbonus += 0.12f;*/
             //Marked for Death (part 1): 5% bonus damage for all ranged shots on marked target
             if (lvl >= 55 && attackType == RANGED_ATTACK && damageinfo.target == markTarget)
                 pctbonus += 0.05f;
@@ -830,7 +798,7 @@ public:
                 TotH[spellId] = 0;
             }
 
-            if (spellId == GetSpell(WING_CLIP_1))
+         /*   if (spellId == GetSpell(WING_CLIP_1))
             {
                 //zzzOLD Improved Wing Clip (only on creatures): 30% to root target with Wing Clip
                 //normal creatures are rooted for 10 sec, elites+ for 6 sec
@@ -842,7 +810,7 @@ public:
                         me->CastSpell(target, clip, true);
                     }
                 }
-            }
+            }*/
             if (spellId == GetSpell(CONCUSSIVE_SHOT_1))
             {
                 //Improved Concussion Shot rank 2: 2 sec increased daze duration
@@ -856,15 +824,15 @@ public:
                 //zzzOLD Improved Concussion Shot: chance to stun target for 3 sec
                 if (urand(1,100) <= 15)
                 {
-                    me->CastSpell(target, IMPROVED_CONCUSSION, true);
+                 //   me->CastSpell(target, IMPROVED_CONCUSSION, true);
                 }
             }
 
             //Rapid Killing: use up buff manually
             if (spellId == GetSpell(AIMED_SHOT_1) || spellId == GetSpell(ARCANE_SHOT_1) || spellId == GetSpell(CHIMERA_SHOT_1))
             {
-                if (me->HasAura(RAPID_KILLING_BUFF))
-                    me->RemoveAura(RAPID_KILLING_BUFF, ObjectGuid::Empty, 0, AURA_REMOVE_BY_EXPIRE);
+               // if (me->HasAura(RAPID_KILLING_BUFF))
+                //    me->RemoveAura(RAPID_KILLING_BUFF, ObjectGuid::Empty, 0, AURA_REMOVE_BY_EXPIRE);
             }
         }
 
@@ -906,7 +874,9 @@ public:
         void Reset()
         {
             Trap_cd = 0;
-
+			me->setPowerType(POWER_FOCUS);
+			me->SetPower(POWER_FOCUS, 100, true);
+			DoCast(me, call_pet, true);
             ScorpidSting_Timer = 0;
             Aspect_Timer = 0;
 
@@ -939,15 +909,15 @@ public:
             InitSpellMap(KILL_SHOT_1);
   /*Talent*/lvl >= 60 ? InitSpellMap(EXPLOSIVE_SHOT_1) : RemoveSpell(EXPLOSIVE_SHOT_1);
             InitSpellMap(MULTISHOT_1);
-            InitSpellMap(VOLLEY_1);
-  /*Talent*/lvl >= 20 ? InitSpellMap(SCATTER_SHOT_1) : RemoveSpell(SCATTER_SHOT_1);
+            //InitSpellMap(VOLLEY_1); // No SpellInfo
+  /*Talent*///lvl >= 20 ? InitSpellMap(SCATTER_SHOT_1) : RemoveSpell(SCATTER_SHOT_1); // No SpellInfo
             InitSpellMap(CONCUSSIVE_SHOT_1);
             InitSpellMap(DISTRACTING_SHOT_1);
-            InitSpellMap(SCORPID_STING_1);
+            //InitSpellMap(SCORPID_STING_1); // No SpellInfo
             //InitSpellMap(VIPER_STING_1);
             InitSpellMap(RAPID_FIRE_1);
-            InitSpellMap(WING_CLIP_1);
-            InitSpellMap(RAPTOR_STRIKE_1);
+            //InitSpellMap(WING_CLIP_1); // No SpellInfo
+            //InitSpellMap(RAPTOR_STRIKE_1); // No SpellInfo
             InitSpellMap(DISENGAGE_1);
             InitSpellMap(FROST_TRAP_1);
             InitSpellMap(FREEZING_ARROW_1);
@@ -967,22 +937,22 @@ public:
         {
             uint8 level = master->getLevel();
 
-            RefreshAura(RAPID_KILLING, level >= 20 ? 1 : 0);
+            //RefreshAura(RAPID_KILLING, level >= 20 ? 1 : 0);
             RefreshAura(CONCUSSIVE_BARRAGE, level >= 30 ? 1 : 0);
             RefreshAura(PIERCING_SHOTS, level >= 40 ? 1 : 0);
             RefreshAura(TRUESHOT_AURA, level >= 40 ? 1 : 0);
             RefreshAura(RAPID_RECUPERATION, level >= 45 ? 1 : 0);
-            RefreshAura(MASTER_MARKSMAN, level >= 45 ? 1 : 0);
-            RefreshAura(WILD_QUIVER, level >= 70 ? 3 : level >= 60 ? 2 : level >= 50 ? 1 : 0);
+            //RefreshAura(MASTER_MARKSMAN, level >= 45 ? 1 : 0);
+            //RefreshAura(WILD_QUIVER, level >= 70 ? 3 : level >= 60 ? 2 : level >= 50 ? 1 : 0);
             RefreshAura(SUREFOOTED, level >= 15 ? 1 : 0);
-            RefreshAura(ENTRAPMENT, level >= 15 ? 1 : 0);
+            //RefreshAura(ENTRAPMENT, level >= 15 ? 1 : 0);
             RefreshAura(MASTER_TACTICIAN5, level >= 67 ? 3 : level >= 58 ? 2 : level >= 50 ? 1 : 0);
             RefreshAura(MASTER_TACTICIAN4, level >= 49 && level < 50 ? 1 : 0);
             RefreshAura(MASTER_TACTICIAN3, level >= 48 && level < 49 ? 1 : 0);
             RefreshAura(MASTER_TACTICIAN2, level >= 47 && level < 48 ? 1 : 0);
             RefreshAura(MASTER_TACTICIAN1, level >= 46 && level < 47 ? 1 : 0);
-            RefreshAura(NOXIOUS_STINGS, level >= 45 ? 1 : 0);
-            RefreshAura(HUNTING_PARTY, level >= 55 ? 1 : 0);
+            //RefreshAura(NOXIOUS_STINGS, level >= 45 ? 1 : 0);
+            //RefreshAura(HUNTING_PARTY, level >= 55 ? 1 : 0);
         }
 
         bool CanUseManually(uint32 basespell) const
@@ -992,7 +962,7 @@ public:
                 case RAPID_FIRE_1:
                 case FROST_TRAP_1:
                 case ASPECT_OF_THE_PACK_1:
-                case ASPECT_OF_THE_VIPER_1:
+//                case ASPECT_OF_THE_VIPER_1:
                     return true;
                 default:
                     return false;
@@ -1010,6 +980,7 @@ public:
 
         enum HunterBaseSpells
         {
+			call_pet                            = 67777,
             AUTO_SHOT_1                         = 75,
             TRANQ_SHOT_1                        = 19801,
             SILENCING_SHOT_1                    = 34490,
@@ -1019,15 +990,15 @@ public:
             KILL_SHOT_1                         = 53351,
             EXPLOSIVE_SHOT_1                    = 53301,
             MULTISHOT_1                         = 2643,
-            VOLLEY_1                            = 1510,
-            SCATTER_SHOT_1                      = 1991,
+        //    VOLLEY_1                            = 1510, // 194386 (6.2)
+          //  SCATTER_SHOT_1                      = 1991,
             CONCUSSIVE_SHOT_1                   = 5116,
             DISTRACTING_SHOT_1                  = 20736,
-            SCORPID_STING_1                     = 3043,
+        //    SCORPID_STING_1                     = 3043,
             //VIPER_STING_1                       = 3034,
             RAPID_FIRE_1                        = 3045,
-            WING_CLIP_1                         = 2974,
-            RAPTOR_STRIKE_1                     = 2973,
+       //     WING_CLIP_1                         = 2974, //195645 (6.2)
+       //     RAPTOR_STRIKE_1                     = 2973, //186270 (6.2)
             DISENGAGE_1                         = 781,
             FROST_TRAP_1                        = 13809,
             FREEZING_ARROW_1                    = 60192,
@@ -1038,45 +1009,45 @@ public:
             FEIGN_DEATH_1                       = 5384,
             DETERRENCE_1                        = 19263,
             ASPECT_OF_THE_PACK_1                = 36613,//Aspect of the Spirit Hunter
-            ASPECT_OF_THE_VIPER_1               = 34074
+       //     ASPECT_OF_THE_VIPER_1               = 34074
             //ASPECT_OF_THE_DRAGONHAWK_1          = 61846
         };
 
         enum HunterPassives
         {
         //Talents
-            RAPID_KILLING                       = 34949,//rank 2
+     //       RAPID_KILLING                       = 34949,//rank 2
             CONCUSSIVE_BARRAGE                  = 35102,//rank 2
             PIERCING_SHOTS                      = 53238,//rank 3
             TRUESHOT_AURA                       = 19506,
             RAPID_RECUPERATION                  = 53232,//rank 2
-            MASTER_MARKSMAN                     = 34489,//rank 5
-            WILD_QUIVER                         = 53217,//rank 3
+        //    MASTER_MARKSMAN                     = 34489,//rank 5
+         //   WILD_QUIVER                         = 53217,//rank 3
             SUREFOOTED                          = 24283,//rank 3
-            ENTRAPMENT                          = 19388,//rank 3
+       //     ENTRAPMENT                          = 19388,//rank 3
             MASTER_TACTICIAN1                   = 34506,
             MASTER_TACTICIAN2                   = 34507,
             MASTER_TACTICIAN3                   = 34508,
             MASTER_TACTICIAN4                   = 34838,
             MASTER_TACTICIAN5                   = 34839,
-            NOXIOUS_STINGS                      = 53297,//rank 3
-            HUNTING_PARTY                       = 53292 //rank 3
+      //      NOXIOUS_STINGS                      = 53297,//rank 3
+      //      HUNTING_PARTY                       = 53292 //rank 3
         };
 
         enum HunterSpecial
         {
-            IMPROVED_CONCUSSION                 = 28445,
+      //      IMPROVED_CONCUSSION                 = 28445,
             IMPROVED_WING_CLIP_NORMAL           = 47168,
             IMPROVED_WING_CLIP_EX               = 35963,
 
-            RAPID_KILLING_BUFF                  = 35099,//rank 2
+     //       RAPID_KILLING_BUFF                  = 35099,//rank 2
             THRILL_OF_THE_HUNT_EFFECT           = 34720,
             FROST_TRAP_AURA                     = 13810,
             FREEZING_ARROW_EFFECT               = 60210,
             //FREEZING_TRAP_EFFECT_1              = 3355,
             //FREEZING_TRAP_EFFECT_2              = 14308,
             //FREEZING_TRAP_EFFECT_3              = 14309,
-            VOLLEY_DAMAGE_1                     = 42243 //rank 1
+      //      VOLLEY_DAMAGE_1                     = 42243 //rank 1
         };
     };
 };

@@ -149,7 +149,7 @@ public:
             if (target->getAttackers().empty() && GetHealthPCT(target) > 33 &&
                 !target->HasAuraType(SPELL_AURA_PERIODIC_DAMAGE))
                 return false;
-            if (target->HasAura(WEAKENED_SOUL_DEBUFF) || HasAuraName(target, PW_SHIELD_1))
+            if (target->HasAura(WEAKENED_SOUL_DEBUFF) || target->HasAura(PW_SHIELD_1))
                 return false;
 
             if (doCast(target, GetSpell(PW_SHIELD_1)))
@@ -249,31 +249,34 @@ public:
                         return;
                     if (IsSpellReady(SW_PAIN_1, diff) && Rand() < 25 &&
                         opponent->GetHealth() > me->GetMaxHealth()/4 &&
-                        !HasAuraName(opponent, SW_PAIN_1, me->GetGUID()) &&
+                        !opponent->HasAura(SW_PAIN_1, me->GetGUID()) &&
                         doCast(opponent, GetSpell(SW_PAIN_1)))
                         return;
+					if (IsSpellReady(SMITE_1, diff) && Rand() < 25)
+						doCast(opponent, GetSpell(SMITE_1));
+						return;
                     if (IsSpellReady(VAMPIRIC_TOUCH_1, diff) && Rand() < 50 &&
                         opponent->GetHealth() > me->GetMaxHealth()/4 &&
-                        !HasAuraName(opponent, VAMPIRIC_TOUCH_1, me->GetGUID()) &&
+                        !opponent->HasAura(VAMPIRIC_TOUCH_1, me->GetGUID()) &&
                         doCast(opponent, GetSpell(VAMPIRIC_TOUCH_1)))
                         return;
                     if (IsSpellReady(DEVOURING_PLAGUE_1, diff) && !Devcheck && Rand() < 30 &&
                         opponent->GetHealth() > me->GetMaxHealth()/3 &&
-                        !HasAuraName(opponent, DEVOURING_PLAGUE_1, me->GetGUID()) &&
+                        !opponent->HasAura(DEVOURING_PLAGUE_1, me->GetGUID()) &&
                         doCast(opponent, GetSpell(DEVOURING_PLAGUE_1)))
                         return;
                     if (IsSpellReady(MIND_BLAST_1, diff) && Rand() < 35 &&
-                        (!GetSpell(VAMPIRIC_TOUCH_1) || HasAuraName(opponent, VAMPIRIC_TOUCH_1, me->GetGUID())) &&
+                        (!GetSpell(VAMPIRIC_TOUCH_1) || opponent->HasAura(VAMPIRIC_TOUCH_1, me->GetGUID())) &&
                         doCast(opponent, GetSpell(MIND_BLAST_1)))
                         return;
                     if (IsSpellReady(MIND_FLAY_1, diff, false) && Rand() < 20 &&
-                        (opponent->IsMoving() || opponent->GetHealth() < me->GetMaxHealth()/5 ||
-                        (HasAuraName(opponent, SW_PAIN_1, me->GetGUID()) && HasAuraName(opponent, DEVOURING_PLAGUE_1, me->GetGUID()))) &&
+                        (opponent->isMoving() || opponent->GetHealth() < me->GetMaxHealth()/5 ||
+                        (opponent->HasAura(SW_PAIN_1, me->GetGUID()) && opponent->HasAura(DEVOURING_PLAGUE_1, me->GetGUID()))) &&
                         doCast(opponent, GetSpell(MIND_FLAY_1)))
                         return;
-                    if (IsSpellReady(MIND_SEAR_1, diff, false) && !opponent->IsMoving() && dist < 35 && Rand() < 50 &&
-                        HasAuraName(opponent, SW_PAIN_1, me->GetGUID()) &&
-                        HasAuraName(opponent, DEVOURING_PLAGUE_1, me->GetGUID()))
+                    if (IsSpellReady(MIND_SEAR_1, diff, false) && !opponent->isMoving() && dist < 35 && Rand() < 50 &&
+						opponent->HasAura(SW_PAIN_1, me->GetGUID()) &&
+						opponent->HasAura(DEVOURING_PLAGUE_1, me->GetGUID()))
                     {
                         if (Unit* u = FindSplashTarget(30, opponent))
                             if (doCast(u, GetSpell(MIND_SEAR_1)))
@@ -285,7 +288,7 @@ public:
             if (IsSpellReady(PSYCHIC_HORROR_1, diff, false) &&
                 opponent->GetCreatureType() != CREATURE_TYPE_UNDEAD &&
                 opponent->GetHealth() > me->GetMaxHealth()/5 && !CCed(opponent) && Rand() < 30 &&
-                me->GetExactDist(opponent) < 30 && !HasAuraName(opponent, PSYCHIC_HORROR_1))
+                me->GetExactDist(opponent) < 30 && !opponent->HasAura(PSYCHIC_HORROR_1))
             {
                 if (doCast(opponent, GetSpell(PSYCHIC_HORROR_1)))
                     return;
@@ -362,7 +365,7 @@ public:
             //PENANCE/Greater Heal
             if (hp < 75 || GetLostHP(target) > 4000)
             {
-                if (IsSpellReady(PENANCE_1, diff, false) && !me->IsMoving() && Rand() < 80 &&
+                if (IsSpellReady(PENANCE_1, diff, false) && !me->isMoving() && Rand() < 80 &&
                     (target->GetTypeId() != TYPEID_PLAYER ||
                     !(target->ToPlayer()->IsCharmed() || target->ToPlayer()->isPossessed())) &&
                     doCast(target, GetSpell(PENANCE_1)))
@@ -386,7 +389,7 @@ public:
             //Renew
             if (IsSpellReady(RENEW_1, diff) &&
                 ((hp < 98 && hp > 70) || GetLostHP(target) > 500 || tanking) &&
-                !HasAuraName(target, RENEW_1, me->GetGUID()) &&
+                !target->HasAura(RENEW_1, me->GetGUID()) &&
                 doCast(target, GetSpell(RENEW_1)))
             {
                 GC_Timer = 800;
@@ -398,7 +401,7 @@ public:
 
         bool BuffTarget(Unit* target, uint32 diff)
         {
-            if (!target || !target->IsInWorld() || target->IsDead() ||
+            if (!target || !target->IsInWorld() || target->isDead() ||
                 GC_Timer > diff || me->GetExactDist(target) > 30 || Rand() > 20)
                 return false;
 
@@ -432,7 +435,7 @@ public:
 
             if (uint32 PW_FORTITUDE = GetSpell(PW_FORTITUDE_1))
             {
-                if (!HasAuraName(target, PW_FORTITUDE) &&
+                if (!target->HasAura(PW_FORTITUDE) &&
                     doCast(target, PW_FORTITUDE))
                 {
                     /*GC_Timer = 800;*/
@@ -441,7 +444,7 @@ public:
             }
             if (uint32 SHADOW_PROTECTION = GetSpell(SHADOW_PROTECTION_1))
             {
-                if (!HasAuraName(target, SHADOW_PROTECTION) &&
+                if (!target->HasAura(SHADOW_PROTECTION) &&
                     doCast(target, SHADOW_PROTECTION))
                 {
                     /*GC_Timer = 800;*/
@@ -450,7 +453,7 @@ public:
             }
             if (uint32 DIVINE_SPIRIT = GetSpell(DIVINE_SPIRIT_1))
             {
-                if (!HasAuraName(target, DIVINE_SPIRIT) &&
+                if (!target->HasAura(DIVINE_SPIRIT) &&
                     doCast(target, DIVINE_SPIRIT))
                 {
                     /*GC_Timer = 800;*/
@@ -593,7 +596,7 @@ public:
                     for (AttackerSet::iterator iter = b_attackers.begin(); iter != b_attackers.end(); ++iter)
                     {
                         if (!(*iter)) continue;
-                        if ((*iter)->IsDead()) continue;
+                        if ((*iter)->isDead()) continue;
                         if (!(*iter)->ToCreature()) continue;
                         if (!(*iter)->CanHaveThreatList()) continue;
                         if (me->GetExactDist((*iter)) < 15)
@@ -897,6 +900,7 @@ public:
             //InitSpellMap(SHADOW_PROTECTION_1); // No SpellInfo
             //InitSpellMap(DIVINE_SPIRIT_1); // No SpellInfo
             InitSpellMap(SW_PAIN_1);
+			InitSpellMap(SMITE_1);
             InitSpellMap(MIND_BLAST_1);
             InitSpellMap(SW_DEATH_1);
             InitSpellMap(DEVOURING_PLAGUE_1);
@@ -981,6 +985,7 @@ public:
 
         enum PriestBaseSpells
         {
+			SMITE_1                             = 585,
             DISPEL_MAGIC_1                      = 527,
             MASS_DISPEL_1                       = 32375,
             CURE_DISEASE_1                      = 528,

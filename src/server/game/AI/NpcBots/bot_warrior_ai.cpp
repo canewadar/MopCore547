@@ -497,7 +497,7 @@ public:
             }
             //HAMSTRING
             if (IsSpellReady(HAMSTRING_1, diff) && (!GetSpell(PIERCING_HOWL_1) || opponent->GetTypeId() == TYPEID_PLAYER) &&
-                opponent->IsMoving() && meleedist <= 5 && rage > rcost(HAMSTRING_1) &&
+                opponent->isMoving() && meleedist <= 5 && rage > rcost(HAMSTRING_1) &&
                 Rand() < 50 && (battleStance || berserkerStance || stancetimer <= diff) &&
                 !opponent->HasAuraWithMechanic((1<<MECHANIC_SNARE)|(1<<MECHANIC_ROOT)))
             {
@@ -506,7 +506,7 @@ public:
                         return;
             }
             //PIERCING HOWL
-            if (IsSpellReady(PIERCING_HOWL_1, diff) && opponent->IsMoving() && meleedist <= 9 && rage > rcost(PIERCING_HOWL_1) &&
+            if (IsSpellReady(PIERCING_HOWL_1, diff) && opponent->isMoving() && meleedist <= 9 && rage > rcost(PIERCING_HOWL_1) &&
                 Rand() < 70 && !opponent->HasAuraWithMechanic((1<<MECHANIC_SNARE)|(1<<MECHANIC_ROOT)))
             {
                 if (doCast(me, GetSpell(PIERCING_HOWL_1)))
@@ -627,15 +627,15 @@ public:
                     doCast(me, GetSpell(WHIRLWIND_1)))
                     return;
             }
-            //BLADESTORM
-            if (IsSpellReady(BLADESTORM_1, diff) && HasRole(BOT_ROLE_DPS) && !IsTank() &&
-               dist <= 10 && rage > rcost(BLADESTORM_1) &&
-               (b_attackers.size() > 1 || opponent->GetHealth() > me->GetMaxHealth()) &&
-               (Rand() < 20 || me->HasAura(RECKLESSNESS_1)))
-            {
-                if (doCast(me, GetSpell(BLADESTORM_1)))
-                    return;
-            }
+			//BLADESTORM
+			if (IsSpellReady(BLADESTORM_1, diff) && HasRole(BOT_ROLE_DPS) && !IsTank() &&
+				dist <= 10 &&
+				(b_attackers.size() > 1 || opponent->GetHealth() > me->GetMaxHealth()) &&
+				(Rand() < 20 || me->HasAura(RECKLESSNESS_1)))
+			{
+				if (doCast(me, GetSpell(BLADESTORM_1)))
+					return;
+			}
             //Mortal Strike
             if (IsSpellReady(MORTALSTRIKE_1, diff) && HasRole(BOT_ROLE_DPS) &&
                 meleedist <= 5 && rage > rcost(MORTALSTRIKE_1) && Rand() < 50)
@@ -644,7 +644,7 @@ public:
                     return;
             }
             //Slam
-            if (IsSpellReady(SLAM_1, diff) && HasRole(BOT_ROLE_DPS) && !IsTank() && !opponent->IsMoving() &&
+            if (IsSpellReady(SLAM_1, diff) && HasRole(BOT_ROLE_DPS) && !IsTank() && !opponent->isMoving() &&
                 meleedist <= 5 && rage > rcost(SLAM_1) && Rand() < (20 + 80 * me->HasAura(BLOODSURGE_BUFF)))
             {
                 if (doCast(opponent, GetSpell(SLAM_1)))
@@ -805,7 +805,7 @@ public:
                     for (GroupReference* itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
                     {
                         Player* pPlayer = itr->GetSource();
-                        if (!pPlayer || !pPlayer->IsInWorld() || pPlayer->IsDead()) continue;
+                        if (!pPlayer || !pPlayer->IsInWorld() || pPlayer->isDead()) continue;
                         if (me->GetMapId() != pPlayer->GetMapId()) continue;
                         if (!IsTankingClass(pPlayer->getClass()) && me->GetExactDist(pPlayer) < 30 &&
                             !pPlayer->HasAura(VIGILANCE))
@@ -825,7 +825,7 @@ public:
                             for (BotMap::const_iterator it = map->begin(); it != map->end(); ++it)
                             {
                                 Creature* cre = it->second;
-                                if (!cre || !cre->IsInWorld() || cre == me || cre->IsDead()) continue;
+                                if (!cre || !cre->IsInWorld() || cre == me || cre->isDead()) continue;
                                 if (!IsTankingClass(cre->GetBotClass()) && me->GetExactDist(cre) < 30 &&
                                     !cre->HasAura(VIGILANCE))
                                 {
@@ -854,7 +854,7 @@ public:
                 !IAmFree() && !IsCasting() && Rand() < (IsTank() ? 80 : 30) &&
                 (defensiveStance || stancetimer <= diff))
             {
-                if (!master->IsInCombat() && master->getAttackers().empty() && master->IsMoving())
+                if (!master->IsInCombat() && master->getAttackers().empty() && master->isMoving())
                 {
                     float mydist = me->GetExactDist(master);
                     if (mydist < 24 && mydist > 19 && (defensiveStance || stanceChange(diff, 2)))
@@ -897,7 +897,7 @@ public:
                         if (tPlayer->FindMap() != me->GetMap()) continue;
                         if (tPlayer->HaveBot())
                             Bots = true;
-                        if (tPlayer->IsDead() || GetHealthPCT(tPlayer) > 90 || IsTank(tPlayer)) continue;
+                        if (tPlayer->isDead() || GetHealthPCT(tPlayer) > 90 || IsTank(tPlayer)) continue;
                         if (tPlayer->getAttackers().size() < me->getAttackers().size()) continue;
                         dist = me->GetExactDist(tPlayer);
                         if (dist > 24 || dist < 10) continue;
@@ -922,7 +922,7 @@ public:
                         for (BotMap::const_iterator it = map->begin(); it != map->end(); ++it)
                         {
                             Creature* bot = it->second;
-                            if (!bot || !bot->IsInWorld() || bot == me || bot->IsDead()) continue;
+                            if (!bot || !bot->IsInWorld() || bot == me || bot->isDead()) continue;
                             if (GetHealthPCT(bot) > 90 || IsTank(bot)) continue;
                             dist = me->GetExactDist(bot);
                             if (dist > 25 || dist < 10) continue;
